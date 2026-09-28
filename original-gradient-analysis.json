@@ -1,0 +1,483 @@
+{
+  "method": "mean RGB per source-screen row, excluding the centered input image",
+  "aggregate": {
+    "frames_averaged": 3,
+    "profile_rows": 1272,
+    "transitions": [
+      {
+        "row": 153,
+        "position": 0.1204,
+        "delta_rgb": 21.7,
+        "from": "#9BA177",
+        "to": "#919866"
+      },
+      {
+        "row": 240,
+        "position": 0.1888,
+        "delta_rgb": 19.8,
+        "from": "#B6B38D",
+        "to": "#B2AF7A"
+      },
+      {
+        "row": 255,
+        "position": 0.2006,
+        "delta_rgb": 36.5,
+        "from": "#AEA69F",
+        "to": "#9A9288"
+      },
+      {
+        "row": 398,
+        "position": 0.3131,
+        "delta_rgb": 21.8,
+        "from": "#9A9785",
+        "to": "#A4A295"
+      },
+      {
+        "row": 473,
+        "position": 0.3721,
+        "delta_rgb": 18.2,
+        "from": "#A39E96",
+        "to": "#9A9589"
+      },
+      {
+        "row": 563,
+        "position": 0.443,
+        "delta_rgb": 20.3,
+        "from": "#6B6E44",
+        "to": "#767951"
+      }
+    ],
+    "palette": {
+      "estimated_core_colors": 5,
+      "sample_block_rows": 16,
+      "colors": [
+        {
+          "hex": "#DCDBDE",
+          "share": 0.312
+        },
+        {
+          "hex": "#595B32",
+          "share": 0.125
+        },
+        {
+          "hex": "#9F9790",
+          "share": 0.225
+        },
+        {
+          "hex": "#C2BCBB",
+          "share": 0.175
+        },
+        {
+          "hex": "#897F6A",
+          "share": 0.163
+        }
+      ],
+      "model_color_count": 5,
+      "bic": {
+        "1": 638.7,
+        "2": 549.5,
+        "3": 495.3,
+        "4": 469.9,
+        "5": 440.4,
+        "6": 444.2,
+        "7": 441.1,
+        "8": 443.8,
+        "9": 455.2,
+        "10": 465.5
+      }
+    }
+  },
+  "frames": [
+    {
+      "image": "/Users/chanwoo/Desktop/Screenshot 2026-09-27 at 3.06.06 PM.png",
+      "size": [
+        1010,
+        1272
+      ],
+      "excluded_input_rect": [
+        303,
+        325,
+        697,
+        846
+      ],
+      "profile_rows": 1272,
+      "transitions": [
+        {
+          "row": 240,
+          "position": 0.1888,
+          "delta_rgb": 21.0,
+          "from": "#B8B491",
+          "to": "#B3B07D"
+        },
+        {
+          "row": 248,
+          "position": 0.1951,
+          "delta_rgb": 26.6,
+          "from": "#AEAA7F",
+          "to": "#B7B197"
+        },
+        {
+          "row": 257,
+          "position": 0.2022,
+          "delta_rgb": 48.6,
+          "from": "#8E8079",
+          "to": "#74645B"
+        },
+        {
+          "row": 266,
+          "position": 0.2093,
+          "delta_rgb": 18.2,
+          "from": "#6C7035",
+          "to": "#767E3B"
+        },
+        {
+          "row": 275,
+          "position": 0.2164,
+          "delta_rgb": 23.4,
+          "from": "#95A373",
+          "to": "#A0AB86"
+        },
+        {
+          "row": 360,
+          "position": 0.2832,
+          "delta_rgb": 24.9,
+          "from": "#8E7B59",
+          "to": "#7F6E4A"
+        },
+        {
+          "row": 368,
+          "position": 0.2895,
+          "delta_rgb": 36.6,
+          "from": "#7A6B58",
+          "to": "#8E7E70"
+        },
+        {
+          "row": 399,
+          "position": 0.3139,
+          "delta_rgb": 33.0,
+          "from": "#88866E",
+          "to": "#979786"
+        },
+        {
+          "row": 460,
+          "position": 0.3619,
+          "delta_rgb": 22.3,
+          "from": "#B1B0A7",
+          "to": "#BCBBB7"
+        },
+        {
+          "row": 477,
+          "position": 0.3753,
+          "delta_rgb": 27.2,
+          "from": "#999479",
+          "to": "#8C8765"
+        }
+      ],
+      "palette": {
+        "estimated_core_colors": 5,
+        "sample_block_rows": 16,
+        "colors": [
+          {
+            "hex": "#DDDBDF",
+            "share": 0.287
+          },
+          {
+            "hex": "#585B2F",
+            "share": 0.125
+          },
+          {
+            "hex": "#A39A95",
+            "share": 0.25
+          },
+          {
+            "hex": "#C5BEBB",
+            "share": 0.188
+          },
+          {
+            "hex": "#877B68",
+            "share": 0.15
+          }
+        ],
+        "model_color_count": 5,
+        "bic": {
+          "1": 639.6,
+          "2": 561.3,
+          "3": 506.7,
+          "4": 476.6,
+          "5": 458.5,
+          "6": 459.9,
+          "7": 461.3,
+          "8": 473.7,
+          "9": 465.6,
+          "10": 467.7
+        }
+      }
+    },
+    {
+      "image": "/Users/chanwoo/Desktop/Screenshot 2026-09-27 at 3.06.13 PM.png",
+      "size": [
+        1010,
+        1272
+      ],
+      "excluded_input_rect": [
+        303,
+        325,
+        697,
+        846
+      ],
+      "profile_rows": 1272,
+      "transitions": [
+        {
+          "row": 152,
+          "position": 0.1196,
+          "delta_rgb": 27.8,
+          "from": "#A1A96E",
+          "to": "#949E58"
+        },
+        {
+          "row": 240,
+          "position": 0.1888,
+          "delta_rgb": 20.8,
+          "from": "#B5AE87",
+          "to": "#B1AA73"
+        },
+        {
+          "row": 255,
+          "position": 0.2006,
+          "delta_rgb": 44.0,
+          "from": "#B3ADAD",
+          "to": "#9C9491"
+        },
+        {
+          "row": 381,
+          "position": 0.2998,
+          "delta_rgb": 22.6,
+          "from": "#766F50",
+          "to": "#837B5E"
+        },
+        {
+          "row": 473,
+          "position": 0.3721,
+          "delta_rgb": 22.1,
+          "from": "#9B9890",
+          "to": "#8F8D81"
+        },
+        {
+          "row": 481,
+          "position": 0.3784,
+          "delta_rgb": 27.8,
+          "from": "#807D65",
+          "to": "#716E53"
+        },
+        {
+          "row": 564,
+          "position": 0.4437,
+          "delta_rgb": 24.4,
+          "from": "#787B56",
+          "to": "#868766"
+        },
+        {
+          "row": 669,
+          "position": 0.5264,
+          "delta_rgb": 25.0,
+          "from": "#7C7663",
+          "to": "#898374"
+        }
+      ],
+      "palette": {
+        "estimated_core_colors": 8,
+        "sample_block_rows": 16,
+        "colors": [
+          {
+            "hex": "#E2E3E6",
+            "share": 0.125
+          },
+          {
+            "hex": "#454728",
+            "share": 0.05
+          },
+          {
+            "hex": "#999186",
+            "share": 0.15
+          },
+          {
+            "hex": "#C3BDBD",
+            "share": 0.15
+          },
+          {
+            "hex": "#646538",
+            "share": 0.087
+          },
+          {
+            "hex": "#857C6A",
+            "share": 0.113
+          },
+          {
+            "hex": "#D7D5D9",
+            "share": 0.2
+          },
+          {
+            "hex": "#AAA19A",
+            "share": 0.125
+          }
+        ],
+        "model_color_count": 8,
+        "bic": {
+          "1": 641.6,
+          "2": 556.2,
+          "3": 494.2,
+          "4": 474.5,
+          "5": 474.0,
+          "6": 450.4,
+          "7": 454.1,
+          "8": 443.3,
+          "9": 451.3,
+          "10": 462.6
+        }
+      },
+      "change_from_previous_frame": {
+        "mean_rgb_distance": 18.11,
+        "rows_over_10_rgb": 511,
+        "max_rgb_distance": 178.5,
+        "best_vertical_shift_rows": 0,
+        "aligned_mean_rgb_distance": 18.11
+      }
+    },
+    {
+      "image": "/Users/chanwoo/Desktop/Screenshot 2026-09-27 at 3.06.19 PM.png",
+      "size": [
+        1010,
+        1272
+      ],
+      "excluded_input_rect": [
+        303,
+        325,
+        697,
+        846
+      ],
+      "profile_rows": 1272,
+      "transitions": [
+        {
+          "row": 153,
+          "position": 0.1204,
+          "delta_rgb": 23.7,
+          "from": "#92996D",
+          "to": "#889159"
+        },
+        {
+          "row": 260,
+          "position": 0.2046,
+          "delta_rgb": 30.2,
+          "from": "#8E8879",
+          "to": "#9E988D"
+        },
+        {
+          "row": 357,
+          "position": 0.2809,
+          "delta_rgb": 24.0,
+          "from": "#9F8C6E",
+          "to": "#93805D"
+        },
+        {
+          "row": 396,
+          "position": 0.3116,
+          "delta_rgb": 21.4,
+          "from": "#9A9A83",
+          "to": "#A4A493"
+        },
+        {
+          "row": 473,
+          "position": 0.3721,
+          "delta_rgb": 28.0,
+          "from": "#9F9B8B",
+          "to": "#908D78"
+        },
+        {
+          "row": 482,
+          "position": 0.3792,
+          "delta_rgb": 26.2,
+          "from": "#878365",
+          "to": "#797653"
+        },
+        {
+          "row": 562,
+          "position": 0.4422,
+          "delta_rgb": 20.2,
+          "from": "#63673E",
+          "to": "#6F724A"
+        },
+        {
+          "row": 661,
+          "position": 0.5201,
+          "delta_rgb": 30.7,
+          "from": "#847772",
+          "to": "#948886"
+        },
+        {
+          "row": 691,
+          "position": 0.5437,
+          "delta_rgb": 18.5,
+          "from": "#8D8466",
+          "to": "#968C74"
+        },
+        {
+          "row": 794,
+          "position": 0.6247,
+          "delta_rgb": 20.3,
+          "from": "#95938B",
+          "to": "#A09E98"
+        }
+      ],
+      "palette": {
+        "estimated_core_colors": 6,
+        "sample_block_rows": 16,
+        "colors": [
+          {
+            "hex": "#DBD9DC",
+            "share": 0.35
+          },
+          {
+            "hex": "#585A31",
+            "share": 0.113
+          },
+          {
+            "hex": "#90887F",
+            "share": 0.15
+          },
+          {
+            "hex": "#797051",
+            "share": 0.1
+          },
+          {
+            "hex": "#BFBABA",
+            "share": 0.138
+          },
+          {
+            "hex": "#A49B91",
+            "share": 0.15
+          }
+        ],
+        "model_color_count": 6,
+        "bic": {
+          "1": 642.6,
+          "2": 547.9,
+          "3": 487.0,
+          "4": 487.1,
+          "5": 458.2,
+          "6": 453.5,
+          "7": 461.0,
+          "8": 455.3,
+          "9": 462.7,
+          "10": 466.4
+        }
+      },
+      "change_from_previous_frame": {
+        "mean_rgb_distance": 15.23,
+        "rows_over_10_rgb": 495,
+        "max_rgb_distance": 167.4,
+        "best_vertical_shift_rows": 0,
+        "aligned_mean_rgb_distance": 15.23
+      }
+    }
+  ]
+}

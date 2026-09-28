@@ -1,0 +1,149 @@
+{
+  "method": "mean RGB per source-screen row, excluding the centered input image",
+  "aggregate": {
+    "frames_averaged": 1,
+    "profile_rows": 1680,
+    "transitions": [
+      {
+        "row": 164,
+        "position": 0.0977,
+        "delta_rgb": 11.6,
+        "from": "#4E4541",
+        "to": "#473E3B"
+      },
+      {
+        "row": 1465,
+        "position": 0.8725,
+        "delta_rgb": 22.5,
+        "from": "#251A18",
+        "to": "#180D0B"
+      }
+    ],
+    "palette": {
+      "estimated_core_colors": 7,
+      "sample_block_rows": 21,
+      "colors": [
+        {
+          "hex": "#584E4C",
+          "share": 0.225
+        },
+        {
+          "hex": "#1B0B09",
+          "share": 0.075
+        },
+        {
+          "hex": "#3D3532",
+          "share": 0.062
+        },
+        {
+          "hex": "#362119",
+          "share": 0.05
+        },
+        {
+          "hex": "#4F4240",
+          "share": 0.325
+        },
+        {
+          "hex": "#685E5D",
+          "share": 0.15
+        },
+        {
+          "hex": "#68504D",
+          "share": 0.113
+        }
+      ],
+      "model_color_count": 7,
+      "bic": {
+        "1": 506.6,
+        "2": 430.8,
+        "3": 381.1,
+        "4": 363.5,
+        "5": 361.8,
+        "6": 342.4,
+        "7": 339.8,
+        "8": 349.8,
+        "9": 344.2,
+        "10": 345.4
+      }
+    }
+  },
+  "frames": [
+    {
+      "image": "/var/folders/8h/ldmd3g6s679cpjqms4_pzbbm0000gn/T/TemporaryItems/NSIRD_screencaptureui_NzytjV/Screenshot 2026-09-27 at 3.07.24 PM.png",
+      "size": [
+        1186,
+        1680
+      ],
+      "excluded_input_rect": [
+        259,
+        604,
+        962,
+        1075
+      ],
+      "profile_rows": 1680,
+      "transitions": [
+        {
+          "row": 164,
+          "position": 0.0977,
+          "delta_rgb": 11.6,
+          "from": "#4E4541",
+          "to": "#473E3B"
+        },
+        {
+          "row": 1465,
+          "position": 0.8725,
+          "delta_rgb": 22.5,
+          "from": "#251A18",
+          "to": "#180D0B"
+        }
+      ],
+      "palette": {
+        "estimated_core_colors": 7,
+        "sample_block_rows": 21,
+        "colors": [
+          {
+            "hex": "#584E4C",
+            "share": 0.225
+          },
+          {
+            "hex": "#1B0B09",
+            "share": 0.075
+          },
+          {
+            "hex": "#3D3532",
+            "share": 0.062
+          },
+          {
+            "hex": "#362119",
+            "share": 0.05
+          },
+          {
+            "hex": "#4F4240",
+            "share": 0.325
+          },
+          {
+            "hex": "#685E5D",
+            "share": 0.15
+          },
+          {
+            "hex": "#68504D",
+            "share": 0.113
+          }
+        ],
+        "model_color_count": 7,
+        "bic": {
+          "1": 506.6,
+          "2": 430.8,
+          "3": 381.1,
+          "4": 363.5,
+          "5": 361.8,
+          "6": 342.4,
+          "7": 339.8,
+          "8": 349.8,
+          "9": 344.2,
+          "10": 345.4
+        }
+      }
+    }
+  ]
+}

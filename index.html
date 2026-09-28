@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a1b1b">
+  <title>Ambient Gradient Studio</title>
+  <style>
+    :root{color-scheme:dark;font:12px/1.45 "SFMono-Regular",Consolas,"Liberation Mono",monospace;color:#f6f4ee}
+    *{box-sizing:border-box}body{margin:0;height:100dvh;overflow:hidden;background:#9ca7a3}button,input,select{font:inherit}button{cursor:pointer}button:disabled,input:disabled{opacity:.38;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #fff;outline-offset:3px}
+    #stage{position:fixed;inset:0;overflow:hidden}#art{position:absolute;inset:0;width:100%;height:100%;display:block}#art.pixelated{image-rendering:pixelated}.source-image{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:min(32vw,430px);max-height:66%;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none;box-shadow:0 16px 60px #0002}.source-image[hidden],.empty-state[hidden]{display:none}.empty-state{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:#fff;letter-spacing:.12em;text-shadow:0 1px 12px #0006;pointer-events:none}
+    .island{position:absolute;z-index:2;top:24px;right:24px;bottom:24px;width:318px;padding:22px;overflow-y:auto;scrollbar-width:thin;border:1px solid #fff3;border-radius:4px;background:#111518ad;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);box-shadow:0 20px 65px #0004}.section-heading,.palette-heading,.label-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-section{border-top:1px solid #ffffff30;padding:16px 0}.panel-section:first-of-type{border-top:0;padding-top:0}.section-heading,.label-row{font-size:10px;letter-spacing:.1em;color:#ffffffa8}.section-heading{margin-bottom:12px}.panel-button,.method-select{width:100%;min-height:37px;padding:9px 11px;border:1px solid #ffffff45;border-radius:4px;background:#ffffff13;color:#fff;text-align:left}.panel-button:hover,.method-select:hover{background:#ffffff24}.panel-button{display:flex;justify-content:space-between;align-items:center}.panel-button.secondary{margin-top:7px;background:transparent;color:#ffffffc7}.method-select{appearance:none;background:#ffffff13 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='white' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 12px center;cursor:pointer}.method-select option{background:#202526;color:#fff}.method-note{min-height:46px;margin:9px 0 0;color:#ffffffa8;font-size:10px;line-height:1.5}.render-toggle{display:grid;grid-template-columns:1fr 1fr;gap:7px}.render-toggle button{min-height:34px;border:1px solid #ffffff45;border-radius:4px;background:transparent;color:#ffffffa8}.render-toggle button.active{background:#ffffff2e;color:#fff}.label-row{margin:16px 0 9px}.label-row output{color:#fff}input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:16px;margin:0;background:transparent;cursor:pointer}input[type=range]::-webkit-slider-runnable-track{height:2px;border-radius:1px;background:#ffffff80}input[type=range]::-moz-range-track{height:2px;border-radius:1px;background:#ffffff80}input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:15px;height:15px;margin-top:-6.5px;border:1px solid #ffffffd9;border-radius:4px;background:#e8e9e4}input[type=range]::-moz-range-thumb{width:14px;height:14px;border:1px solid #ffffffd9;border-radius:4px;background:#e8e9e4}
+    .source-thumb[hidden]{display:none}.source-thumb{display:grid;grid-template-columns:66px 1fr;align-items:center;gap:10px;margin-top:12px;padding:8px;border:1px solid #ffffff2b;border-radius:4px;background:#0003;color:#ffffffa8;font-size:9px;letter-spacing:.08em}.source-thumb img{width:100%;height:72px;object-fit:contain;border-radius:2px;background:#0002}.palette-heading{font-size:10px;letter-spacing:.1em;color:#ffffffa8}.palette-heading button,.hex{padding:0;border:0;background:none;color:#ffffffa8}.palette-heading button:hover,.hex:hover{color:#fff}.swatches{display:grid;grid-template-columns:1fr 1fr;gap:13px 9px;margin-top:15px}.swatch{display:grid;grid-template-columns:12px 1fr;gap:8px;min-width:0;padding:0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.swatch:hover .hex{color:#fff}.swatch:focus-visible{outline:1px solid #fff;outline-offset:3px}.swatch-dot{width:12px;height:12px;margin-top:2px;border:1px solid #ffffff36;border-radius:3px;background:var(--swatch)}.swatch-name{min-width:0;display:grid;gap:2px}.swatch-name strong{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.swatch-name span,.hex{font-size:10px;text-align:left}.swatch-name span{color:#ffffff91}.motion-note,.export-note{margin:9px 0 0;color:#ffffffa0;font-size:9px;line-height:1.5}.export-actions{display:grid;gap:7px;margin-top:8px}.export-secondary{display:grid;grid-template-columns:1fr 1fr;gap:7px}.export-secondary .panel-button{font-size:9px;justify-content:center;text-align:center}.export{background:#f5f4ef;color:#202321;border-color:#f5f4ef}.export:hover{background:#fff}.toast{position:absolute;z-index:3;left:50%;bottom:22px;transform:translateX(-50%);padding:10px 13px;border:1px solid #ffffff45;border-radius:4px;background:#111518bd;backdrop-filter:blur(12px);color:#fff;opacity:0;transition:opacity .2s;pointer-events:none}.toast.show{opacity:1}#file{display:none}
+    @media(max-width:720px){.island{top:auto;right:12px;bottom:12px;left:12px;width:auto;max-height:51dvh;padding:17px}.source-image{max-width:67vw;max-height:42%;top:29%}.empty-state{align-items:start;padding-top:20vh}.toast{bottom:calc(51dvh + 20px)}}
+  </style>
+</head>
+<body>
+  <main id="stage">
+    <canvas id="art" aria-label="Gradient generated from the uploaded image"></canvas>
+    <img class="source-image" id="sourceImage" alt="Uploaded input image" hidden>
+    <div class="empty-state" id="emptyState">UPLOAD A PNG OR JPG TO CREATE AN AMBIENT GRADIENT</div>
+    <aside class="island" aria-label="Gradient controls">
+      <section class="panel-section">
+        <div class="section-heading">01 / SOURCE</div>
+        <button class="panel-button" id="upload">UPLOAD IMAGE <span>↗</span></button>
+        <input id="file" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg">
+        <button class="panel-button secondary" id="toggleImage" disabled aria-pressed="false">SHOW INPUT IMAGE</button>
+        <div class="source-thumb" id="sourceThumb" hidden><span>HIDDEN INPUT</span><img id="sourceThumbImage" alt="Hidden source image thumbnail"></div>
+      </section>
+      <section class="panel-section">
+        <label class="section-heading" for="method">02 / METHOD</label>
+        <select class="method-select" id="method">
+          <option value="stripes">SCAN STRIPES</option>
+          <option value="soft">SOFT SCAN</option>
+          <option value="accent">ACCENT SCAN</option>
+          <option value="zen">ZEN FIELD</option>
+          <option value="story">COLOUR STORY</option>
+        </select>
+        <p class="method-note" id="methodNote"></p>
+        <label class="label-row" for="scanWidth"><span>SCAN WIDTH</span><output id="scanWidthValue">12%</output></label>
+        <input id="scanWidth" type="range" min="4" max="40" value="12">
+        <label class="label-row" for="softness"><span>EDGE SOFTNESS</span><output id="softnessValue">28%</output></label>
+        <input id="softness" type="range" min="0" max="100" value="28">
+      </section>
+      <section class="panel-section">
+        <div class="section-heading">03 / MOTION</div>
+        <label class="label-row" for="motionAmount"><span>AMOUNT</span><output id="motionAmountValue">55%</output></label>
+        <input id="motionAmount" type="range" min="0" max="100" value="55">
+        <label class="label-row" for="motionSpeed"><span>SPEED</span><output id="motionSpeedValue">70%</output></label>
+        <input id="motionSpeed" type="range" min="0" max="100" value="70">
+        <p class="motion-note" id="motionNote"></p>
+      </section>
+      <section class="panel-section">
+        <div class="section-heading">04 / RENDER</div>
+        <div class="render-toggle" role="group" aria-label="Gradient rendering"><button data-style="pixel">PIXEL</button><button class="active" data-style="smooth">SMOOTH</button></div>
+        <label class="label-row" for="resolution"><span>PIXEL DETAIL</span><output id="resolutionValue">95%</output></label>
+        <input id="resolution" type="range" min="20" max="100" value="95" disabled>
+      </section>
+      <section class="panel-section palette" aria-label="Extracted key colours">
+        <div class="palette-heading"><span id="paletteTitle">KEY COLOURS</span><button id="copyPalette" aria-label="Copy palette details">COPY ↗</button></div>
+        <div class="swatches" id="swatches"></div>
+      </section>
+      <div class="export-actions">
+        <button class="panel-button export" id="export">EXPORT PNG <span id="exportResolution">— × — px</span></button>
+        <div class="export-secondary"><button class="panel-button" id="exportSvg">EXPORT SVG</button><button class="panel-button" id="recordVideo">RECORD VIDEO</button></div>
+        <p class="export-note">SVG is a still image. Video records 8 seconds of the moving gradient.</p>
+      </div>
+    </aside>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+  <script>
+    const demoColors=['#d8d3c9','#93aca2','#c4aab9','#485a5b'];
+    const methodNotes={stripes:'Per-row colour mode from a narrow centre scan. Keeps the source colours and stripe boundaries.',soft:'The same centre scan, smoothed with a colour-aware filter that softens nearby colours while holding strong boundaries.',accent:'Adds a restrained trace of vivid local colours when they appear in the scan window.',zen:'A quiet scan blend with preserved colour. No white tint, glow, or bloom.',story:'Key colours ordered by source height, arranged as a designed sequence.'};
+    const state={style:'smooth',method:'stripes',resolution:95,scanWidth:12,softness:28,motionAmount:55,motionSpeed:70,inputImage:null,imageProfile:null,profilePixels:null,framePixels:null,shiftedProfile:null,imageColors:null,imageVisible:true,sourceUrl:null,frame:0};
+    const canvas=document.querySelector('#art'),stage=document.querySelector('#stage'),sourceImage=document.querySelector('#sourceImage');
+    function currentColors(){return state.imageColors||demoColors}
+    function rgb(hex){return [0,2,4].map(i=>parseInt(hex.slice(i+1,i+3),16))}
+    function hexOf(color){return '#'+color.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}
+    function keyColorRole(hex){const [r,g,b]=rgb(hex).map(v=>v/255),max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min;if(delta<.12)return max>.82?'White':max<.2?'Ink':'Gray';let hue=0;if(max===r)hue=((g-b)/delta+(g<b?6:0))/6;else if(max===g)hue=((b-r)/delta+2)/6;else hue=((r-g)/delta+4)/6;return hue<.055||hue>.95?'Red':hue<.09?(max<.72?'Brown':'Orange'):hue<.12?'Sand':hue<.17?'Gold':hue<.24?'Lime':hue<.43?'Green':hue<.55?'Cyan':hue<.72?'Blue':hue<.87?'Violet':'Pink'}
+    function paint(target,w,h,time=performance.now()){
+      const ctx=target.getContext('2d'),colors=currentColors();if(!w||!h)return;
+      ctx.clearRect(0,0,w,h);
+      if(state.imageProfile){
+        const profile=state.imageProfile,profileHeight=profile.height,speed=state.motionSpeed/100,period=70-speed*40,longPeriod=115-speed*50,tintPeriod=longPeriod*1.25,phase=time*Math.PI*2/(period*1000),slowPhase=time*Math.PI*2/(longPeriod*1000),tintPhase=time*Math.PI*2/(tintPeriod*1000);
+        const shifted=state.shiftedProfile.getContext('2d'),row=shifted.createImageData(1,profileHeight),pixels=state.profilePixels;
+        for(let y=0;y<profileHeight;y++){
+          const band=y/profileHeight*6,index=Math.min(5,Math.floor(band)),blend=band-index,smooth=blend*blend*(3-2*blend);
+          const a=Math.sin(phase+index*1.91),b=Math.sin(phase+(index+1)*1.91),slowA=Math.sin(slowPhase+index*2.37),slowB=Math.sin(slowPhase+(index+1)*2.37);
+          const baseAmount=state.method==='stripes'?7:state.method==='zen'?4:5,amount=baseAmount*state.motionAmount/100,offset=amount*((a*(1-smooth)+b*smooth)*.72+(slowA*(1-smooth)+slowB*smooth)*.28),tint=(state.method==='stripes'?1.2:.6)*state.motionAmount/100*Math.sin(tintPhase+index*2.1);
+          for(let channel=0;channel<3;channel++){const base=pixels[y*4+channel],gain=channel===0?1:channel===1?.92:.82,color=base+offset*gain+(channel===0?tint:channel===2?-tint:0);row.data[y*4+channel]=Math.max(0,Math.min(255,color))}
+          row.data[y*4+3]=255;
+        }
+        state.framePixels=row.data.slice();
+        shifted.putImageData(row,0,0);
+        ctx.imageSmoothingEnabled=state.style==='smooth';
+        const blur=Math.min(3,h*.002);ctx.filter=state.style==='smooth'?`blur(${blur}px)`:'none';
+        ctx.drawImage(state.shiftedProfile,0,0,w,h);ctx.filter='none';
+      }else{
+        const gradient=ctx.createLinearGradient(0,0,0,h);
+        colors.forEach((color,i)=>gradient.addColorStop(i/(colors.length-1),color));
+        ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
+      }
+    }
+    function draw(time=performance.now()){
+      if(state.frame)cancelAnimationFrame(state.frame);
+      paint(canvas,canvas.width,canvas.height,time);
+      if(state.imageProfile)state.frame=requestAnimationFrame(draw);
+    }
+    function exportSize(){const r=stage.getBoundingClientRect(),scale=Math.min(devicePixelRatio||1,2);return {width:Math.max(90,Math.round(r.width*scale)),height:Math.max(70,Math.round(r.height*scale)),scale}}
+    function resize(){const size=exportSize(),detail=state.style==='pixel'?state.resolution/100:1;canvas.width=size.width;canvas.height=Math.max(70,Math.round(size.height*detail));canvas.classList.toggle('pixelated',state.style==='pixel');document.querySelector('#exportResolution').textContent=`${size.width} × ${size.height} px`;draw()}
+    function updateMotionNote(){
+      const speed=state.motionSpeed/100,period=Math.round(70-speed*40),longPeriod=Math.round(115-speed*50),base=state.method==='stripes'?7:state.method==='zen'?4:5;
+      document.querySelector('#motionNote').textContent=`Six y-zones shift independently. Two sine waves move brightness by up to ±${(base*state.motionAmount/100).toFixed(1)} RGB over ${period}s / ${longPeriod}s, with a subtle warm–cool tint. Amount controls distance; Speed controls cycle time.`;
+    }
+    function drawVisibleSource(target){
+      if(!state.imageVisible||!sourceImage.complete||!sourceImage.naturalWidth)return;
+      const stageRect=stage.getBoundingClientRect(),imageRect=sourceImage.getBoundingClientRect(),scale=target.width/stageRect.width;
+      target.getContext('2d').drawImage(sourceImage,(imageRect.left-stageRect.left)*scale,(imageRect.top-stageRect.top)*scale,imageRect.width*scale,imageRect.height*scale);
+    }
+    function renderPalette(){
+      const entries=state.imageColors?.map(hex=>({hex,role:keyColorRole(hex)}))||[];
+      document.querySelector('#paletteTitle').textContent=entries.length?`KEY COLOURS / ${String(entries.length).padStart(2,'0')}`:'KEY COLOURS / AWAITING IMAGE';
+      document.querySelector('#copyPalette').disabled=!entries.length;
+      document.querySelector('#swatches').innerHTML=entries.map(({hex,role})=>`<button class="swatch" type="button" data-copy="${hex}" aria-label="Copy ${hex} ${role}"><span class="swatch-dot" style="--swatch:${hex}"></span><span class="swatch-name"><strong>${role}</strong><span class="hex">${hex}</span></span></button>`).join('');
+      document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copy(b.dataset.copy));
+    }
+    function makeProfile(img,algorithm='center'){
+      const w=Math.min(256,img.naturalWidth),h=Math.min(768,img.naturalHeight);
+      const sample=document.createElement('canvas'),sampleCtx=sample.getContext('2d',{willReadFrequently:true});sample.width=w;sample.height=h;sampleCtx.fillStyle='#fff';sampleCtx.fillRect(0,0,w,h);sampleCtx.imageSmoothingEnabled=true;sampleCtx.imageSmoothingQuality='high';sampleCtx.drawImage(img,0,0,w,h);
+      const pixels=sampleCtx.getImageData(0,0,w,h).data,profile=document.createElement('canvas'),profileCtx=profile.getContext('2d',{willReadFrequently:true});profile.width=1;profile.height=h;
+      const row=profileCtx.createImageData(1,h);
+      const setMode=(y,left,right,accent=false)=>{
+        const bins=new Map();
+        for(let x=Math.max(0,left);x<Math.min(w,right);x++){
+          const p=(y*w+x)*4,a=pixels[p+3]/255,r=pixels[p]*a+255*(1-a),g=pixels[p+1]*a+255*(1-a),b=pixels[p+2]*a+255*(1-a),key=(r>>4)*256+(g>>4)*16+(b>>4),bin=bins.get(key)||[0,0,0,0];
+          bin[0]+=r;bin[1]+=g;bin[2]+=b;bin[3]++;bins.set(key,bin);
+        }
+        let mode=null,best=-Infinity;for(const bin of bins.values())if(bin[3]>best){mode=bin;best=bin[3]}
+        let color=mode.slice(0,3).map(value=>value/mode[3]);
+        if(accent&&mode){
+          const minCount=Math.max(1,(Math.min(w,right)-Math.max(0,left))*.025);let vivid=null,vividScore=0;
+          for(const bin of bins.values()){
+            const candidate=bin.slice(0,3).map(value=>value/bin[3]),max=Math.max(...candidate),min=Math.min(...candidate),saturation=max?(max-min)/max:0,separation=Math.hypot(...candidate.map((value,c)=>value-color[c]));
+            if(bin===mode||bin[3]<minCount||saturation<.2||separation<38)continue;
+            const score=bin[3]/Math.max(1,right-left)*(.35+.65*saturation);
+            if(score>vividScore){vivid=bin;vividScore=score}
+          }
+          if(vivid){const accentColor=vivid.slice(0,3).map(value=>value/vivid[3]),mix=Math.min(.56,.14+vivid[3]/Math.max(1,right-left)*1.4),baseLab=toLab(color),accentLab=toLab(accentColor);color=fromLab(baseLab.map((value,c)=>value*(1-mix)+accentLab[c]*mix))}
+        }
+        const i=y*4;row.data[i]=color[0];row.data[i+1]=color[1];row.data[i+2]=color[2];row.data[i+3]=255;
+      };
+      if(algorithm==='story'&&state.imageColors?.length){
+          const anchors=state.imageColors.map(hex=>({color:rgb(hex),sum:0,mass:0}));
+        for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+          const p=(y*w+x)*4,a=pixels[p+3]/255,color=[pixels[p]*a+255*(1-a),pixels[p+1]*a+255*(1-a),pixels[p+2]*a+255*(1-a)];
+          let closest=null,distance=Infinity;
+          for(const anchor of anchors){const d=color.reduce((sum,v,i)=>sum+(v-anchor.color[i])**2,0);if(d<distance){closest=anchor;distance=d}}
+          const weight=Math.max(0,1-Math.sqrt(distance)/60)**2;closest.sum+=y*weight;closest.mass+=weight;
+        }
+        anchors.sort((a,b)=>(a.mass?a.sum/a.mass/h:.5)-(b.mass?b.sum/b.mass/h:.5));
+        anchors.forEach((anchor,i)=>anchor.position=.45*(anchor.mass?anchor.sum/anchor.mass/Math.max(1,h-1):.5)+.55*(i+.5)/anchors.length);
+        let index=0;
+        for(let y=0;y<h;y++){
+          const position=y/Math.max(1,h-1);while(index<anchors.length-2&&position>anchors[index+1].position)index++;
+          const a=anchors[index],b=anchors[Math.min(index+1,anchors.length-1)],mid=(a.position+b.position)/2,width=Math.min(.018,(b.position-a.position)*.18),t=a===b?0:Math.max(0,Math.min(1,(position-mid+width)/(2*width))),blend=t*t*(3-2*t),i=y*4;
+          for(let c=0;c<3;c++)row.data[i+c]=a.color[c]*(1-blend)+b.color[c]*blend;
+          row.data[i+3]=255;
+        }
+      }else{
+        const left=Math.floor(w*(.5-state.scanWidth/200)),right=Math.max(left+1,Math.ceil(w*(.5+state.scanWidth/200)));
+        for(let y=0;y<h;y++)setMode(y,left,right,algorithm==='accent');
+      }
+      profileCtx.putImageData(row,0,0);return profile;
+    }
+    function blurProfile(pixels,height,sigma){
+      const output=new Float32Array(height*3),radius=Math.max(1,Math.ceil(sigma*3));
+      for(let y=0;y<height;y++){
+        let total=0;const sums=[0,0,0];
+        for(let offset=-radius;offset<=radius;offset++){
+          const sourceY=Math.max(0,Math.min(height-1,y+offset)),weight=Math.exp(-.5*(offset/sigma)**2),index=sourceY*4;
+          total+=weight;for(let c=0;c<3;c++)sums[c]+=pixels[index+c]*weight;
+        }
+        for(let c=0;c<3;c++)output[y*3+c]=sums[c]/total;
+      }
+      return output;
+    }
+    function bilateralProfile(pixels,height,softness){
+      const output=new Uint8ClampedArray(height*4),sigma=Math.max(1,height*(.003+softness*.00025)),radius=Math.ceil(sigma*3),rangeSigma=.09+softness*.003;
+      for(let y=0;y<height;y++){
+        const center=y*4,lab=toLab([pixels[center],pixels[center+1],pixels[center+2]]),sum=[0,0,0];let total=0;
+        for(let dy=-radius;dy<=radius;dy++){
+          const source=Math.max(0,Math.min(height-1,y+dy)),index=source*4,color=toLab([pixels[index],pixels[index+1],pixels[index+2]]),distance=Math.hypot(color[0]-lab[0],color[1]-lab[1],color[2]-lab[2]);
+          const weight=Math.exp(-.5*(dy/sigma)**2-.5*(distance/rangeSigma)**2);total+=weight;
+          for(let c=0;c<3;c++)sum[c]+=pixels[index+c]*weight;
+        }
+        for(let c=0;c<3;c++)output[center+c]=sum[c]/total;output[center+3]=255;
+      }
+      return output;
+    }
+    function makeZenProfile(pixels,height,softness){
+      const edgeAware=bilateralProfile(pixels,height,softness),broad=blurProfile(pixels,height,Math.max(2,height*.055)),output=new Uint8ClampedArray(height*4);
+      for(let y=0;y<height;y++)for(let c=0;c<3;c++)output[y*4+c]=edgeAware[y*4+c]*.86+broad[y*3+c]*.14;
+      for(let y=0;y<height;y++)output[y*4+3]=255;
+      return output;
+    }
+    function toLab(color){
+      const [r,g,b]=color.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});
+      const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+      return [.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s];
+    }
+    function fromLab([L,a,b]){
+      const l=(L+.3963377774*a+.2158037573*b)**3,m=(L-.1055613458*a-.0638541728*b)**3,s=(L-.0894841775*a-1.291485548*b)**3;
+      const linear=[4.0767416621*l-3.3077115913*m+.2309699292*s,-1.2684380046*l+2.6097574011*m-.3413193965*s,-.0041960863*l-.7034186147*m+1.707614701*s];
+      return linear.map(v=>Math.max(0,Math.min(255,255*(v<=.0031308?12.92*v:1.055*Math.max(0,v)**(1/2.4)-.055))));
+    }
+    function extractColors(img){
+      const scale=Math.min(1,192/Math.max(img.naturalWidth,img.naturalHeight)),sample=document.createElement('canvas'),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
+      sample.width=w;sample.height=h;const sampleCtx=sample.getContext('2d',{willReadFrequently:true});sampleCtx.drawImage(img,0,0,w,h);
+      return extractColorsFromPixels(sampleCtx.getImageData(0,0,w,h).data,w,h);
+    }
+    function extractColorsFromPixels(raw,w,h){
+      const bins=new Map(),accents=new Map(),total=w*h;
+      // ponytail: 4-bit RGB modes and a 40% cutoff keep palettes concise; lower it if fine shades matter.
+      for(let i=0;i<raw.length;i+=4){
+        const alpha=raw[i+3]/255,r=raw[i]*alpha+255*(1-alpha),g=raw[i+1]*alpha+255*(1-alpha),b=raw[i+2]*alpha+255*(1-alpha),key=(r>>4)*256+(g>>4)*16+(b>>4),bin=bins.get(key)||[0,0,0,0];bin[0]+=r;bin[1]+=g;bin[2]+=b;bin[3]++;bins.set(key,bin);
+        const max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min,saturation=max?delta/max:0,value=max/255;let hue=0;
+        if(delta){if(max===r)hue=((g-b)/delta+(g<b?6:0))/6;else if(max===g)hue=((b-r)/delta+2)/6;else hue=((r-g)/delta+4)/6}
+        if(saturation>.28&&value>.78){const hueBin=Math.floor(hue*24),accent=accents.get(hueBin)||[0,0,0,0,0,0];accent[0]+=r;accent[1]+=g;accent[2]+=b;accent[3]++;accent[4]+=saturation;accent[5]+=value;accents.set(hueBin,accent)}
+      }
+      const candidates=[...bins.values()].map(([r,g,b,count])=>{
+        const color=[r/count,g/count,b/count],max=Math.max(...color)/255,min=Math.min(...color)/255,saturation=max?(max-min)/max:0,value=max,share=count/total;
+        return {color,count,saturation,value,score:Math.sqrt(share)*(.52+.48*saturation+(value>.84&&saturation<.16?.2:0))};
+      }).sort((a,b)=>b.score-a.score);
+      const chosen=[],minimumSupport=Math.max(2,Math.ceil(total*.00015)),distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+      while(chosen.length<10){
+        let best=null,bestScore=0;
+        for(const candidate of candidates){
+          if(candidate.count<minimumSupport)continue;
+          const separation=chosen.length?Math.min(...chosen.map(item=>distance(item.color,candidate.color))):180;
+          if(separation<30)continue;
+          const score=candidate.score*(.35+.65*Math.min(1,separation/180));
+          if(score>bestScore){best=candidate;bestScore=score}
+        }
+        if(!best||chosen.length&&bestScore<chosen[0].score*.4)break;
+        chosen.push(best);
+      }
+      const white=candidates.filter(item=>item.value>.84&&item.saturation<.16&&item.count>=minimumSupport*2).sort((a,b)=>b.value-a.value||b.count-a.count)[0],brightAccents=[...accents.values()].filter(([, , ,count])=>count>=minimumSupport).map(([r,g,b,count,s,v])=>({color:[r/count,g/count,b/count],score:Math.sqrt(count/total)*(.35+.45*s/count+.2*v/count)})).sort((a,b)=>b.score-a.score),colors=[];
+      if(white)colors.push(white.color);
+      for(const accent of brightAccents)if(colors.every(color=>distance(color,accent.color)>14))colors.push(accent.color);
+      for(const item of chosen)if(colors.every(color=>distance(color,item.color)>30))colors.push(item.color);
+      return colors.slice(0,10).map(hexOf);
+    }
+    function installProfile(img){
+      const algorithm=state.method==='story'?'story':state.method==='accent'?'accent':'center';
+      state.imageProfile=makeProfile(img,algorithm);
+      const raw=state.imageProfile.getContext('2d',{willReadFrequently:true}).getImageData(0,0,1,state.imageProfile.height).data,height=state.imageProfile.height;
+      state.profilePixels=state.method==='soft'?bilateralProfile(raw,height,state.softness):state.method==='zen'?makeZenProfile(raw,height,state.softness):raw;
+      state.shiftedProfile=document.createElement('canvas');state.shiftedProfile.width=1;state.shiftedProfile.height=state.imageProfile.height;
+    }
+    function download(blob,name){const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+    function exportSvg(){
+      const rect=stage.getBoundingClientRect(),width=Math.round(rect.width),height=Math.round(rect.height),pixels=state.framePixels||state.profilePixels;
+      const stops=pixels?Array.from({length:state.imageProfile.height},(_,y)=>`<stop offset="${100*y/Math.max(1,state.imageProfile.height-1)}%" stop-color="${hexOf(Array.from(pixels.slice(y*4,y*4+3)))}"/>`):currentColors().map((color,i)=>`<stop offset="${100*i/Math.max(1,currentColors().length-1)}%" stop-color="${color}"/>`);
+      let image='';
+      if(state.imageVisible&&sourceImage.complete&&sourceImage.naturalWidth){
+        const r=sourceImage.getBoundingClientRect(),embed=document.createElement('canvas');embed.width=Math.max(1,Math.round(r.width*2));embed.height=Math.max(1,Math.round(r.height*2));embed.getContext('2d').drawImage(sourceImage,0,0,embed.width,embed.height);
+        image=`<image x="${r.left-rect.left}" y="${r.top-rect.top}" width="${r.width}" height="${r.height}" href="${embed.toDataURL('image/png')}"/>`;
+      }
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">${stops.join('')}</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/>${image}</svg>`;
+      download(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),'ambient-gradient.svg');
+    }
+    function recordVideo(){
+      if(!canvas.captureStream||!window.MediaRecorder){toast('VIDEO RECORDING IS NOT AVAILABLE IN THIS BROWSER');return}
+      const {width,height}=exportSize(),out=document.createElement('canvas'),low=state.style==='pixel'?document.createElement('canvas'):null;if(low){low.width=width;low.height=Math.max(70,Math.round(height*state.resolution/100))}out.width=width;out.height=height;
+      const stream=out.captureStream(30),types=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/mp4'],mime=types.find(type=>MediaRecorder.isTypeSupported?.(type));
+      let recorder;try{recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined)}catch{stream.getTracks().forEach(track=>track.stop());toast('VIDEO RECORDING IS NOT AVAILABLE IN THIS BROWSER');return}
+      const button=document.querySelector('#recordVideo'),chunks=[];button.disabled=true;button.textContent='RECORDING 8S…';
+      recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      recorder.onerror=()=>{button.disabled=false;button.textContent='RECORD VIDEO';stream.getTracks().forEach(track=>track.stop());toast('VIDEO RECORDING FAILED')};
+      recorder.onstop=()=>{const type=recorder.mimeType||'video/webm',extension=type.includes('mp4')?'mp4':'webm';button.disabled=false;button.textContent='RECORD VIDEO';stream.getTracks().forEach(track=>track.stop());if(chunks.length)download(new Blob(chunks,{type}),`ambient-gradient.${extension}`)};
+      recorder.start(250);toast('RECORDING 8 SECONDS');const start=performance.now();
+      const frame=now=>{if(low){paint(low,low.width,low.height,now);const ctx=out.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(low,0,0,width,height)}else paint(out,width,height,now);drawVisibleSource(out);if(now-start<8000)requestAnimationFrame(frame);else recorder.stop()};requestAnimationFrame(frame);
+    }
+    function toast(message){const el=document.querySelector('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1500)}
+    async function copy(value){try{await navigator.clipboard.writeText(value)}catch{const field=document.createElement('textarea');field.value=value;field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();const copied=document.execCommand('copy');field.remove();if(!copied){toast('COPY FAILED');return}}toast(`${value} COPIED`)}
+    document.querySelector('#upload').onclick=()=>document.querySelector('#file').click();
+    document.querySelector('#file').onchange=e=>{
+      const file=e.target.files[0];e.target.value='';if(!file)return;
+      const validExtension=/\.(png|jpe?g)$/i.test(file.name),validType=['image/png','image/jpeg','image/jpg','application/octet-stream'].includes(file.type);
+      if(!validExtension||(file.type&&!validType)){toast('PLEASE CHOOSE A PNG OR JPG');return}
+      const img=new Image(),url=URL.createObjectURL(file);
+      img.onload=()=>{state.imageColors=extractColors(img);state.inputImage=img;installProfile(img);state.imageVisible=true;sourceImage.src=url;sourceImage.hidden=false;document.querySelector('#sourceThumbImage').src=url;document.querySelector('#sourceThumb').hidden=true;if(state.sourceUrl)URL.revokeObjectURL(state.sourceUrl);state.sourceUrl=url;const toggle=document.querySelector('#toggleImage');toggle.disabled=false;toggle.textContent='HIDE INPUT IMAGE';toggle.setAttribute('aria-pressed','true');document.querySelector('#emptyState').hidden=true;renderPalette();resize();updateMotionNote();toast(`${state.imageColors.length} KEY COLOURS EXTRACTED`)};
+      img.onerror=()=>{URL.revokeObjectURL(url);toast('COULD NOT READ THIS IMAGE')};img.src=url;
+    };
+    document.querySelector('#toggleImage').onclick=e=>{if(!state.imageProfile)return;state.imageVisible=!state.imageVisible;sourceImage.hidden=!state.imageVisible;document.querySelector('#sourceThumb').hidden=state.imageVisible;e.currentTarget.textContent=state.imageVisible?'HIDE INPUT IMAGE':'SHOW INPUT IMAGE';e.currentTarget.setAttribute('aria-pressed',String(state.imageVisible))};
+    const refreshMethod=()=>{document.querySelector('#methodNote').textContent=methodNotes[state.method];document.querySelector('#scanWidth').disabled=state.method==='story';document.querySelector('#softness').disabled=!['soft','zen'].includes(state.method);if(state.inputImage){installProfile(state.inputImage);resize()}updateMotionNote()};
+    document.querySelector('#method').onchange=e=>{state.method=e.target.value;refreshMethod()};
+    document.querySelector('#scanWidth').oninput=e=>{state.scanWidth=Number(e.target.value);document.querySelector('#scanWidthValue').textContent=`${state.scanWidth}%`;if(state.inputImage){installProfile(state.inputImage);resize()}};
+    document.querySelector('#softness').oninput=e=>{state.softness=Number(e.target.value);document.querySelector('#softnessValue').textContent=`${state.softness}%`;if(state.inputImage){installProfile(state.inputImage);resize()}};
+    document.querySelector('#motionAmount').oninput=e=>{state.motionAmount=Number(e.target.value);document.querySelector('#motionAmountValue').textContent=`${state.motionAmount}%`;updateMotionNote();draw()};
+    document.querySelector('#motionSpeed').oninput=e=>{state.motionSpeed=Number(e.target.value);document.querySelector('#motionSpeedValue').textContent=`${state.motionSpeed}%`;updateMotionNote();draw()};
+    document.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>{state.style=b.dataset.style;document.querySelectorAll('[data-style]').forEach(x=>x.classList.toggle('active',x===b));document.querySelector('#resolution').disabled=state.style!=='pixel';resize()});
+    document.querySelector('#resolution').oninput=e=>{state.resolution=Number(e.target.value);document.querySelector('#resolutionValue').textContent=`${state.resolution}%`;resize()};
+    document.querySelector('#export').onclick=()=>{const {width,height}=exportSize(),out=document.createElement('canvas');out.width=width;out.height=height;if(state.style==='pixel'){const low=document.createElement('canvas');low.width=width;low.height=Math.max(70,Math.round(height*state.resolution/100));paint(low,low.width,low.height);const ctx=out.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(low,0,0,width,height)}else paint(out,width,height);drawVisibleSource(out);out.toBlob(blob=>{if(blob)download(blob,'ambient-gradient.png')},'image/png')};
+    document.querySelector('#exportSvg').onclick=exportSvg;
+    document.querySelector('#recordVideo').onclick=recordVideo;
+    document.querySelector('#copyPalette').onclick=()=>copy((state.imageColors||[]).join('\n'));
+    refreshMethod();new ResizeObserver(resize).observe(stage);renderPalette();resize();updateMotionNote();
+  </script>
+</body>
+</html>
