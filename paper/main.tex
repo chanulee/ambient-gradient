@@ -1,0 +1,305 @@
+\documentclass[10pt]{article}
+\usepackage{kotex}
+\usepackage[a4paper,margin=19mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx,array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\definecolor{ink}{HTML}{26312E}
+\definecolor{moss}{HTML}{71836F}
+\definecolor{paper}{HTML}{F3F1EC}
+\definecolor{line}{HTML}{D8D6CF}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\tagline}[1]{\textcolor{moss}{\small\textsf{#1}}}
+\newcommand{\good}{\textbf{장점.} }
+\newcommand{\trade}{\textbf{한계.} }
+\title{Ambient Gradient Studio\\[-.2em]\large 설계 사례와 알고리즘 팩트시트}
+\author{프로젝트 리서치 노트}
+\date{2026년 9월}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+\begin{center}\tagline{CASE STUDY \quad / \quad IMAGE-TO-ATMOSPHERE \quad / \quad IMPLEMENTATION NOTES}\end{center}
+
+\section*{이 문서가 다루는 것}
+이 문서는 새 범용 필터의 논문이 아니다. 입력 사진을 한 줄짜리 색 프로파일로 줄이고, 그 프로파일을 화면을 채우는 움직이는 배경으로 쓰기까지의 설계 기록이다. 여섯 가지 현재 모드의 계산, 장단점, 참고 연구와의 관계, 실패해 제외한 실험, 코드로 측정한 결과를 한곳에 정리한다. 수식과 파라미터는 현재 저장소 구현을 설명하며, 각 방법의 미학적 우수성을 증명하지 않는다.
+
+\begin{center}
+\colorbox{paper}{\begin{minipage}{.94\linewidth}
+\textbf{읽는 법.} \textit{구현}은 현재 코드가 실제 수행하는 계산, \textit{차용}은 원 연구에서 가져온 문제 설정이나 수학적 아이디어, \textit{프로젝트 설계}는 이 도구를 위해 정한 규칙이다. 문헌이 제안한 알고리즘을 그대로 재현한 경우는 없다. 특히 원본 Japanese Gradients의 내부 생성 코드는 공개 자료만으로 알 수 없어, 레퍼런스 스크린샷으로부터 관찰한 시각 언어와 우리 구현을 구분한다.
+\end{minipage}}
+\end{center}
+
+\section{시스템 개요}
+업로드된 PNG/JPG는 서로 다른 두 경로로 읽힌다. 프로파일 경로는 긴 변을 최대 768픽셀로 줄여 세로 위치와 세부 변화를 계산한다. 팔레트 경로는 긴 변 최대 192픽셀의 원본 색 샘플에서 최대 10개의 key colour를 뽑는다. 투명 픽셀은 흰색과 합성한다. 두 경로를 모두 쓰는 Palette Scan을 제외하면, 팔레트 표시가 자동으로 줄무늬 생성에 개입하지 않는다.
+
+\begin{center}
+\begin{tikzpicture}[font=\small,box/.style={draw=line,fill=paper,rounded corners=2pt,align=center,minimum height=9mm},arr/.style={-{Stealth[length=2mm]},draw=moss,line width=.7pt}]
+\node[box,text width=2.1cm] (src) at (0,0) {입력 이미지\\PNG / JPG};
+\node[box,text width=3.0cm] (pal) at (3.3,.72) {팔레트 경로\\192px / 원본 색};
+\node[box,text width=3.0cm] (prof) at (3.3,-.72) {프로파일 경로\\768px / y 순서};
+\node[box,text width=3.2cm] (merge) at (7.2,0) {선택 모드\\높이 $H$의 1D 색 신호};
+\node[box,text width=3.2cm] (out) at (11.2,0) {6개 구간 모션\\캔버스 / 내보내기};
+\draw[arr] (src.east) -- (pal.west); \draw[arr] (src.east) -- (prof.west);
+\draw[arr] (pal.east) -- (merge.west); \draw[arr] (prof.east) -- (merge.west);
+\draw[arr] (merge.east) -- (out.west);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{PROFILE과 LOOK은 왜 나뉘었나?}
+두 단어는 특정 논문의 표준 단계나 원본 서비스에서 확인된 내부 구조가 아니다. 엔지니어링 관점에서 \textbf{PROFILE}은 사진을 높이별 색 신호로 바꾸는 일이고, \textbf{LOOK}은 그 신호를 후처리해 가장자리를 부드럽게 하거나 넓은 색 흐름을 더하는 일이다. 분리하면 같은 프로파일에 여러 후처리를 조합할 수 있다. 현재 UI에서는 혼란을 줄이기 위해 \texttt{METHOD} 하나로 합쳤다. 내부 계산에서는 Scan Stripes, Accent Scan, Colour Story, Palette Scan이 프로파일을 만들고, Soft Scan과 Zen Field는 중앙 스캔 프로파일 뒤에 필터를 적용한다.
+
+\section{공통 전처리: key colour 팔레트}
+팔레트는 세로 스캔라인을 모아서 만들지 않는다. 업로드된 이미지 자체를 최대 192픽셀로 축소한 뒤 RGBA를 흰색 바탕에 합성하고, 4비트 RGB 히스토그램(채널당 16단계, 최대 4096개 bin)을 만든다. 각 bin의 평균 RGB를 후보색으로 삼는다.
+
+후보 bin $b$의 점유율을 $p_b$, 채도와 최대 RGB 채널값을 각각 $S_b,V_b$라 하면 일반 후보 점수는
+\[
+R_b=\sqrt{p_b}\bigl(0.52+0.48S_b+0.20\,\mathbf{1}[V_b>0.84\land S_b<0.16]\bigr).
+\]
+제곱근 빈도는 큰 면적색이 팔레트를 독점하는 정도를 완화하고, 높은 채도와 거의 흰색인 후보에 가산점을 준다. 최소 지지 픽셀 수는 $\max(2,\lceil0.00015N\rceil)$이다. 이후 이미 고른 색과 RGB 거리가 30 미만인 후보를 건너뛰며 점수와 색상 간격을 반영해 최대 10개를 고른다.
+
+밝고 선명한 색은 별도 경로로 보강한다. $S>0.28,V>0.78$ 픽셀을 24개 hue bin으로 모으고, 지지 수와 평균 채도/밝기를 점수화한다. 거의 흰색 후보는 별도로 넣으며, 중복색은 RGB 거리로 걸러낸다. 마지막으로 UI의 이름(White, Lime, Orange 등)을 간단한 HSV 경계로 붙인다. 이 이름은 전통 일본 색 이름이나 이미지 의미를 분류한 결과가 아니다.
+
+\good 작은 면적의 흰색·고채도 포인트를 주 면적색과 별도로 보존할 수 있다. 색 표시는 프로파일 알고리즘과 독립적으로 유지된다.
+
+\trade 4비트 RGB 양자화와 고정된 지원 임계값 때문에 거의 같은 색이 합쳐지거나 매우 작은 색이 빠질 수 있다. 팔레트는 축소 샘플을 사용하므로 원본 전체 해상도 픽셀을 모두 분석하는 것은 아니다. RGB 거리로 중복을 판단하는 것도 지각 균일하지 않다.
+
+\section{현재 여섯 모드: 계산과 성격}
+기호 $I(x,y)$는 전처리된 이미지, $H$는 축소 이미지의 높이, $P_y$는 출력 프로파일의 $y$번째 RGB 값이다. OKLab 거리 $d(\cdot,\cdot)$는 두 색 차이를 계산하는 데 쓰며, 채널값 자체를 평균하는 단계와 구분한다.
+
+\subsection{Scan Stripes --- 기준 프로파일}
+가로 스캔 폭을 이미지 폭의 $a$ 비율로 놓고, 중심 $x=W/2$ 주위 창 $\Omega_y$에서 각 픽셀을 4비트 RGB bin으로 양자화한다. 가장 표본이 많은 bin의 원본 RGB 평균을 해당 행의 값으로 쓴다:
+\[
+b(r,g,b)=256\lfloor r/16\rfloor+16\lfloor g/16\rfloor+\lfloor b/16\rfloor,\qquad
+P_y=\operatorname{mean}\{I(x,y):x\in\Omega_y,\ b(I)=\operatorname{mode}_b\}.
+\]
+초기 폭은 12\%, UI 범위는 4--40\%다. 이는 행 전체 평균이 아니라 중심 창의 \textbf{행별 히스토그램 최빈색}이다. 구현은 1$\times H$ 프로파일을 만들고 세로 순서를 유지한다.
+
+\good 설명하기 쉽고, 이미지의 중심부에 있는 경계와 색 순서를 강하게 남긴다. 비교 실험의 기준선 역할도 한다.
+
+\trade 중심 창 밖에만 있는 꽃잎·형광 표지처럼 작은 색은 빠진다. 각 행을 독립 선택하므로 양자화 bin 경계에서 얇은 깜빡임이나 급격한 색 바뀜이 생길 수 있다. 창 폭을 넓히면 더 많은 색이 섞이지만 중심부 특징을 덜 선택적으로 읽는다.
+
+\tagline{분류: 프로젝트의 기준 규칙 / 참고문헌의 직접 구현 아님}
+
+\subsection{Soft Scan --- 1D bilateral 후처리}
+먼저 Scan Stripes를 만들고, 각 행 주변의 색을 세로 거리와 중심색 유사도로 가중 평균한다. 구현식은
+\[
+\widetilde P_y=\frac{\sum_{j\in\mathcal N_y} w(y,j)P_j}{\sum_{j\in\mathcal N_y}w(y,j)},\qquad
+w(y,j)=\exp\left[-\frac{(y-j)^2}{2\sigma_y^2}-\frac{d(P_y,P_j)^2}{2\sigma_c^2}\right].
+\]
+여기서 색 거리는 OKLab에서 구한다. Softness 값 $s\in[0,100]$에 대해 $\sigma_y=\max(1,H(0.003+0.00025s))$, $\sigma_c=0.09+0.003s$이다. 창 반경은 $\lceil3\sigma_y\rceil$이다.
+
+\good 기본 Gaussian보다 색 경계를 고려한다. 같은 계열의 잔떨림을 줄이면서 큰 색 차이를 가로질러 섞는 것을 억제한다.
+
+\trade 직접 구현 비용은 대략 $O(H\sigma_y)$다. 강한 경계가 보존되더라도 매우 좁은 창, 선택된 색과 유사한 이웃에 의한 색 이동, 한쪽 신호의 계단화 가능성이 남는다. 이 모드는 bilateral filter의 개념을 2D 사진 전체가 아닌 이미 축약된 1D 신호에 적용한 변형이다.
+
+\tagline{차용: bilateral의 공간 거리 + 색 유사도 가중 / 구현: 1D 프로파일 전용 변형 [2]}
+
+\subsection{Accent Scan --- 중심 창의 포인트색 혼합}
+각 행의 최빈 bin을 바탕색으로 잡고, 같은 중심 창에서 그와 충분히 다른 선명한 bin을 하나 찾는다. 후보는 채도 $>0.2$, 바탕색과 RGB 거리 $>38$, 표본 수 $n\ge\max(1,0.025|\Omega_y|)$를 만족해야 한다. 점수는
+\[
+S_{\mathrm{accent}}=\frac{n}{|\Omega_y|}(0.35+0.65\,\mathrm{sat}),\qquad
+\mu=\min\left(0.56,0.14+1.4\frac{n}{|\Omega_y|}\right).
+\]
+가장 높은 점수의 후보와 최빈색을 OKLab에서 $\mu$만큼 섞는다.
+
+\good 작은 포인트색이 \emph{스캔 창 안에} 있을 때 완전히 지워지지 않게 한다. 색 선택과 혼합 정도가 코드에서 추적 가능하다.
+
+\trade 이미지 전체의 key palette나 각 색의 전체 픽셀 비율을 쓰지 않는다. 중심 창 밖에 있는 액센트는 여전히 누락되고, 색을 보강하는 대신 혼합하므로 원본의 실제 색 비율을 보존하지 않는다.
+
+\tagline{분류: 로컬 히스토그램 선택의 프로젝트 설계 / 팔레트 recolouring 자체를 구현한 것은 아님}
+
+\subsection{Zen Field --- edge-aware + broad-scale 혼합}
+Scan Stripes에 Soft Scan과 전체 프로파일의 넓은 Gaussian blur를 각각 적용한 뒤 혼합한다:
+\[
+Z_y=0.86\,\widetilde P_y+0.14\,G_{\sigma_b}(P)_y,\qquad \sigma_b=\max(2,0.055H).
+\]
+Gaussian 신호 $G$는 각 채널을 세로로 평활화한다. Softness는 bilateral 쪽에만 적용된다. 현재 Zen 프로파일 함수에는 흰색 틴트, 채도 저하, radial wash, glow/bloom 연산이 없다. 다만 Smooth 렌더링 모드는 마지막 캔버스에 최대 3px의 작은 blur를 적용한다.
+
+\good Soft Scan보다 넓은 규모의 색 변화가 연결되고, Scan Stripes보다 급격한 잔변화가 줄어든다.
+
+\trade 넓은 Gaussian 성분은 실제 사진의 가는 띠를 약화시키고 가까운 색을 덩어리처럼 보이게 할 수 있다. 이 모드는 새로운 edge-aware 필터라기보다 기존 신호의 두 스케일 혼합이다.
+
+\tagline{참고 발상: edge-aware / multiscale processing [2,4,5] / 혼합비와 목적은 프로젝트 설계}
+
+\subsection{Colour Story --- y 위치 기반 팔레트 재배열}
+key palette의 각 색 $c_k$에 대해 RGB 거리 $d_{RGB}$가 60 미만인 원본 픽셀에
+\[
+\omega_k(x,y)=\max(0,1-d_{RGB}(I(x,y),c_k)/60)^2
+\]
+가중치를 주고 세로 중심 $\bar y_k=\sum y\omega_k/\sum\omega_k$를 구한다. 중심 순으로 색을 정렬하고, 프로파일상의 정지점은 실제 중심 45\%와 균등 간격 위치 55\%의 혼합으로 배치한다. 정지점 사이는 smoothstep으로 연결한다.
+
+\good 키 색을 사진 속 대략적인 위아래 순서에 따라 정돈된 색 이야기로 보여준다. 각 색이 여러 높이에 반복돼 나타나는 경우 중심점으로 위치를 요약한다.
+
+\trade 픽셀의 RGB 근접도만 사용하며, palette mass를 유지하는 제약은 없다. 같은 색이 이미지의 위아래에 반복되어도 평균 위치 하나로 줄어든다. 균등 간격 성분 때문에 정지점이 실제 점유율과 멀어질 수 있다. 결과는 원본의 축약이라기보다 설계된 재배열이다.
+
+\tagline{차용: spatial palette summary 관점 / 위치 가중·정지점 배치는 프로젝트 설계 [6,9]}
+
+\subsection{Palette Scan --- palette-mass-constrained scanline projection}
+이 모드는 원본 이미지의 전체 색 비율과 y 위치별 지지를 중심 스캔과 결합한다. 먼저 각 픽셀 OKLab 값 $\ell(x,y)$을 key colour $\ell_k$에 soft-assign한다:
+\[
+a_k(x,y)=\frac{\exp[-\|\ell(x,y)-\ell_k\|^2/(2\tau^2)]}{\sum_j\exp[-\|\ell(x,y)-\ell_j\|^2/(2\tau^2)]},\quad \tau=0.055,
+\]
+\[
+q_k=\frac{1}{WH}\sum_{x,y}a_k(x,y),\qquad r_{yk}=\frac{1}{W}\sum_x a_k(x,y).
+\]
+$q_k$는 전체 이미지 질량, $r_{yk}$는 행별 색 지지다. $r$은 $0.8\%H$ 정도 반경의 짧은 세로 Gaussian kernel로 평활화한다. 중앙 스캔색 $s_y$와의 유사도를 더해
+\[
+K_{yk}=(\bar r_{yk}+\epsilon)^{0.72}
+\left(\exp[-d(s_y,\ell_k)^2/(2\cdot0.15^2)]+\epsilon\right)^{0.28},\quad \epsilon=10^{-8}
+\]
+의 점수를 만든다. 48회 row/column scaling을 수행하고, 이후 각 행을 다시 정규화한다. 이 순서는 질량과 행 제약을 근사적으로 맞추는 것이며, 이후 이산 라벨링과 색 재구성을 거친 최종 RGB 픽셀의 정확한 질량 보존을 뜻하지 않는다.
+
+이를 명시하면 매 반복은 $u_y\leftarrow(\sum_kK_{yk}v_k)^{-1}$, $v_k\leftarrow q_k/(\sum_yK_{yk}u_y)$로 두 스케일을 갱신하고, $B_{yk}=u_yK_{yk}v_k$를 각 행의 합으로 나눠 $T_{yk}=B_{yk}/\sum_jB_{yj}$를 얻는 과정이다. 질량 보존을 끄면 열 스케일링 대신 각 행만 정규화한다. 따라서 $T$는 최종 출력색이 아니라 뒤따르는 이산 라벨러의 부드러운 행별 비용이다.
+
+이 행별 색 점수 위에서 Viterbi 동적 계획법으로 라벨 $z_y$를 구한다:
+\[
+E(z)=\sum_y-\log T_{y,z_y}+\sum_{y=2}^{H}\lambda_y\,[z_y\ne z_{y-1}].
+\]
+행간 스캔색 변화 또는 색 지지 변화가 큰 위치에서는 $\lambda_y$를 낮춰 경계를 허용하고, 변화가 작으면 고정 전이 비용을 적용해 고립된 색 라벨을 억제한다. soft 질량 $Hq_k$는 largest-remainder 방식으로 정수 행 수로 바꾼다. 충분히 지지된 밝고 채도 높은 색($Hq_k\ge0.08$, $V>0.78$, $S>0.28$)은 최대 4행 바닥값을 받는다. 바닥값으로 추가된 행은 다른 색의 몫에서 비례해 가져온다. 그 뒤 가장 확신이 낮은 행부터 옮기는 greedy quota repair를 해 정수 행 수를 맞춘다. 이 보정은 전역 최적 경로를 다시 푸는 것은 아니다.
+
+경계 완화는 다음 코드 규칙을 따른다:
+\[
+\Delta r_y=\sum_k|\bar r_{yk}-\bar r_{y-1,k}|,\quad
+\Delta s_y=d(s_y,s_{y-1}),\quad
+e_y=\min(1,\max(2\Delta r_y,\Delta s_y/0.15)),\quad
+\lambda_y=1.1(1-0.85e_y).
+\]
+데이터 항 $-\log T_{y,z_y}$가 행별 색 근거를 나타내며, Potts 항은 연속한 두 행의 palette label이 달라질 때 비용을 낸다. 최종적으로 모든 행을 정확히 한 palette label에 배정하므로, 이 단계가 soft palette mixture를 밴드형 프로파일로 바꾸는 핵심이다.
+
+마지막 출력색은 주변 라벨의 palette 색을 짧은 Gaussian OKLab 평균으로 연결하고, 스캔 신호와 가장 가까운 palette 색 사이의 잔차 42\%를 되돌려 더한다. 연결 반경은 $\max(1,\min(8,\operatorname{round}(0.006H)))$ 행이다.
+
+\good 중심 스캔의 전반적인 순서를 유지하면서 중심 창 밖 key colour도 사용할 수 있다. 색 비율, y 위치, 경계 연속성, 최소 액센트 폭이 각각 어디에 작용하는지 분리해 실험할 수 있다.
+
+\trade 최소 액센트 폭은 아주 작은 색의 실제 점유율을 초과해 보이게 한다. 이산 라벨의 행 할당은 정수 quota에 맞춰도, 잔차 추가와 후처리 뒤의 RGB 결과는 그 수치 그대로의 색 비율을 보장하지 않는다. greedy quota repair는 휴리스틱이며 복잡도는 현재 형태에서 $O(H^2K)$까지 든다. 더 많은 색이나 큰 $H$에서 계산량이 커질 수 있고, 영역이 띠로 나타나는 모양은 미학적 품질 지표가 아니다.
+
+\tagline{분류: 알려진 구성요소를 결합한 과제 특화 프로토타입 / 일반 필터로서 novelty 주장 안 함}
+
+\section{모션과 렌더링: 무엇이 실제로 움직이나?}
+프로파일의 색 정지점이나 y 순서를 위아래로 스크롤하지 않는다. 화면 높이를 6개 phase 구간으로 나누고, 인접 구간의 변화를 smoothstep으로 연결해 각 구간의 밝기를 천천히 흔든다. 구간 인덱스를 $j$라 할 때 빠른/느린 파동은
+\[
+A_j(t)=0.72\sin(2\pi t/T_1+1.91j)+0.28\sin(2\pi t/T_2+2.37j),
+\]
+\[
+T_1=70-40v,\quad T_2=115-50v,\quad T_{\mathrm{tint}}=1.25T_2,
+\]
+이며 $v\in[0,1]$는 Speed다. 해당 위치의 색에 $A_0mA_j(t)$를 더한다. $m$은 Amount, $A_0$는 Scan Stripes 7 RGB, Zen Field 4 RGB, 나머지 모드 5 RGB다. R/G/B 채널은 각각 $1,0.92,0.82$배로 움직이고, 더 느린 틴트 파동은 빨강에 더하고 파랑에서 빼며 초록은 건드리지 않는다. 기본 Speed 70\%일 때 $T_1=42$s, $T_2=80$s, 틴트 주기는 100s다. 따라서 제어 대상은 \textbf{국소 밝기와 미세한 warm--cool 색조}이지 프로파일의 수직 위치가 아니다.
+
+\textbf{Smooth/Pixel.} Smooth는 화면용 캔버스 높이로 프로파일을 늘이고 작은 blur를 적용한다. Pixel은 캔버스 높이를 Pixel Detail 비율로 먼저 낮춘 뒤 nearest-neighbour 방식으로 확대한다. 그래서 detail slider는 원본 프로파일 데이터나 추출 해상도를 바꾸기보다 렌더링된 띠의 두께와 양자화를 제어한다.
+
+\textbf{내보내기.} PNG는 현재 시각의 캔버스, SVG는 현재 프로파일을 정지 linear gradient와 선택적으로 포함된 입력 이미지로 기록한다. Video는 8초 동안 30fps canvas stream을 녹화하고 브라우저가 지원하는 MP4/WebM MIME type을 사용한다. 브라우저 지원에 따라 영상 형식은 달라질 수 있다. 숨긴 입력 이미지는 UI에서 썸네일로 확인하며, 표시 상태는 내보내기에도 반영된다.
+
+\section{레퍼런스 역설계와 시행착오}
+\subsection*{스크린샷 분석기는 생성기가 아니다}
+\texttt{analyze\_gradient.py}는 레퍼런스 스크린샷에서 중앙 이미지 사각형을 제외하고, 좌우에 남은 그라디언트 픽셀을 화면 행마다 RGB 평균해 비교용 신호로 만든다. 이 행 평균은 \textbf{스크린샷 배경을 측정하기 위한 분석 전용}이며, 앱의 입력 사진으로부터 프로파일을 생성할 때 쓰이지 않는다. 생성기는 앞서 설명한 중심 창 행별 최빈 bin을 사용한다.
+
+분석기는 5행 평균 평활화 뒤 RGB 거리 18 이상인 국소 peak를 강한 경계로 세고, 최소 8행 간격을 둔다. 색 개수는 약 80개 샘플로 줄인 프로파일에 1--10개 군집 모델을 맞추고 BIC가 낮은 수를 선택한다. 평균 3프레임에서는 5개 중심 색과 경계 약 6곳, 개별 프레임에서는 색 군집 5/8/6개와 경계 8--10곳으로 추정됐다. 대응 프레임 간 행 색 변화는 평균 RGB 거리 약 15--18로, 전체 신호가 한꺼번에 이동하는 것보다 구간별 변화가 관찰됐다. 이는 첨부 화면과 임계값에 의존하는 \textbf{스크린샷 추정치}이지, 원본 서비스의 정확한 파라미터 역추적은 아니다.
+
+\subsection*{디자인 피드백으로 바뀐 선택}
+\begin{tabularx}{\linewidth}{@{}p{2.9cm}YY@{}}
+\toprule
+초기 선택 / 문제 & 관찰 & 현재 정리 \\
+\midrule
+행 평균을 생성 프로파일로 사용 & 화면 전체의 큰 면적색이 작은 포인트색을 묻고 원한 scan stripe 구조와 달라짐 & 생성 쪽에서는 제외. 행 평균은 스크린샷 바깥 영역 분석에만 남김. \\
+Color Mass 계열의 hard band & 큰 단색 직사각형이 쌓인 인상, gradient 연속감 부족 & 그대로 유지하지 않음. 현재 Palette Scan은 center-scan anchor, y evidence, 연속성 비용, 짧은 전이 재구성을 조합. \\
+Zen의 화이트 틴트 / radial wash / 과한 blur & 희뿌연 막과 밝은 halo처럼 보임 & 현 Zen은 86\% edge-aware scan + 14\% broad Gaussian만 사용. Smooth 렌더 blur는 별도 단계. \\
+Saliency Path & 색이 약하고 뿌옇게 보여 기준 모드로 부적합 & 현재 UI와 코드에서 제외. Scan Stripes를 가장 직접적인 레퍼런스 모드로 유지. \\
+\bottomrule
+\end{tabularx}
+
+원본 Japanese Gradients 자료는 프로젝트를 역사적 일본 색과 목판화에서 영감을 받은 컬러 리소스로 소개한다 [1]. 제공 스크린샷에서는 수평 밴드, 원본 이미지의 중앙 배치, 일부 날카로운 색 경계를 관찰할 수 있다. 이 관찰만으로 그 서비스가 어떤 통계량이나 shader를 썼는지 단정하지 않는다. 우리 도구의 “Japanese gradient”는 문화권 전체의 단일 미학 공식을 뜻하지 않고, 해당 레퍼런스와 사용자가 선호한 저채도·수평 밴드·느린 ambient 움직임을 가리키는 프로젝트 shorthand다.
+
+\section{참고 연구: 무엇을 가져왔고 무엇은 다른가?}
+\begin{tabularx}{\linewidth}{@{}p{3.5cm}YY@{}}
+\toprule
+연구 / 원래 문제 & 이 프로젝트에 주는 관점 & 실제 구현과의 차이 \\
+\midrule
+Bilateral Filtering [2] & 공간적으로 가깝고 색도 유사한 샘플끼리 평균해 평활화와 경계 보존을 절충 & Soft Scan이 1D y 프로파일에 가중식을 적용. 원 논문의 2D 이미지 필터 전체를 재현하지 않음. \\
+Color2Gray [3] & 축약 과정에서 시각적으로 중요한 색 차가 사라지는 문제를 목적함수로 다룸 & 회색조 변환에서 인접 픽셀 색 차를 보존하도록 최적화. 우리 출력은 1D 색/위치 분포이며 같은 목적함수는 아님. \\
+Guided Filter [4] / Domain Transform [5] & 입력 구조를 가이드로 삼아 경계를 고려하고 효율적인 필터를 설계하는 대안 & 코드에 포함되지 않음. Guided Filter는 local linear model, Domain Transform은 색 경계를 반영해 1D 신호 좌표를 워핑한 뒤 필터링한다. 1D profile 단계의 후속 후보일 뿐이다. \\
+Palette-based Photo Recoloring [6] & 이미지 팔레트를 조작 가능한 색 요약과 연결 & 그 연구는 픽셀별 색 전달로 사진을 다시 칠함. 여기서는 key colour 표시 및 y-profile 생성에 palette를 사용하며 사진 recolouring은 하지 않음. \\
+RGBXY palette decomposition [7] & 색뿐 아니라 이미지 내 위치를 함께 고려하는 spatial palette 관점 & RGB+XY 기하로 per-pixel mixing layer를 계산하는 방법. 우리 구현은 해당 convex-hull 분해를 하지 않고 행별 palette evidence만 집계. \\
+Gradient Layer Decomposition [8] & 사진을 편집 가능한 gradient representation으로 바꾸는 직접적인 graphics 사례 & 입력 segmentation을 바탕으로 여러 2D linear-gradient layer와 alpha를 분해. Ambient Gradient는 x축 구조를 버리고 화면 전체의 1D 수평 밴드 하나로 축약. \\
+Mondrian [9] & uniform/proportional/spatial palette 등 추상 색 조작을 UI 선택지로 다루는 사례 & 인터랙티브 이미지 colourisation 시스템. 현재 알고리즘의 근거가 아니며 PROFILE/LOOK UI 구분도 여기서 가져온 것이 아님. \\
+\bottomrule
+\end{tabularx}
+
+이 연구들은 문제 설정과 대안의 위치를 설명하지만, Palette Scan의 결합식이 앞선 연구에서 유래했다는 뜻은 아니다. 단순 palette assignment, matrix balancing, 1D Potts/Viterbi, quota rounding 각각은 알려진 수학적 도구다. 현재 기여를 적는다면 “이미지-to-ambient-gradient 축약을 위한 실험 가능한 구현 사례와 비교 기록”이 가장 정확하다. 새 filter novelty, 우선권, 지각적 개선을 주장할 근거는 아직 없다.
+
+\section{코드 실험: 무엇이 좋아지고 무엇이 나빠졌나}
+실험기는 앱에서 사용하는 동일한 \texttt{palette-projection.js} 모듈을 Node.js에서 호출한다. 25개 고정 seed 합성 입력은 5개 큰 수평 배경색과 중심 스캔 창 밖의 흰색·라임·주황 포인트를 포함한다. 여기에 사용자가 제공한 phone image 한 장을 별도 사례로 돌렸다. Scan Stripes와 Palette Scan은 같은 palette extractor, 12\% 창, 입력 리사이즈, 출력 높이를 사용한다.
+
+\textbf{지표.} Palette-share TV는 source와 output의 palette soft mass 분포 사이 half-$L_1$ 거리다. Vertical W1은 각 색의 정규화된 세로 분포 사이 1D Wasserstein 거리를 source mass로 가중한다. Bright-accent recall은 $V>0.78,S>0.28$, 충분한 source 지지를 가진 색이 output에서 OKLab 거리 0.075 안쪽의 행을 갖는지 센다. Strong transitions는 인접 행 사이 OKLab 거리가 0.08을 넘는 횟수다. 마지막 지표는 구조 진단이며 미적 품질 점수가 아니다.
+
+구체적으로 팔레트 soft membership으로 만든 source/output 비율을 $q^S_k,q^O_k$라 하면 $\mathrm{TV}=\frac12\sum_k|q^S_k-q^O_k|$다. 색 $k$에 대해 높이별 membership을 각 색의 전체 지지량으로 정규화한 누적분포를 $F^S_k,F^O_k$라 하고, source 비율을 $q^S_k$라 하면 $\mathrm{W1}=\sum_kq^S_k\frac{1}{H-1}\sum_{y=1}^{H-1}|F^S_k(y)-F^O_k(y)|$다. 두 값은 각각 팔레트 비율 오차와 색의 수직 배치 오차를 분리해 본다.
+
+\begin{center}
+\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+데이터 & 모드 & TV $\downarrow$ & 세로 W1 $\downarrow$ & 액센트 재현 & 경계 수 \\
+\midrule
+합성 25장 & Scan Stripes & .0370 & .0176 & .02 & 4.08 \\
+ & Palette Scan & .0196 & .0160 & .80 & 10.92 \\
+phone 1장 & Scan Stripes & .0847 & .0998 & 1.00 & 23 \\
+ & Palette Scan & .0323 & .0985 & 1.00 & 5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+실제 출력 비교 이미지(입력 / Scan Stripes / Palette Scan)는 \texttt{paper/figures/comparison-wide.png}에 저장된다. 이는 위 표의 합성 포인트색 사례와 phone 사진 결과를 나란히 보여주는 보조 산출물이며, 수치 지표와 마찬가지로 미학적 우열을 증명하지 않는다.
+
+합성 입력에서 색 비율 TV는 약 47\% 낮고 세로 W1은 약 9\% 낮았다. 액센트 재현은 2\%에서 80\%로 높아졌다. 하지만 mean adjacent OKLab 차와 strong transition 수가 증가해, Palette Scan이 일반적으로 더 부드럽거나 더 아름답다고 결론내릴 수 없다. phone 입력 한 장에서는 TV가 0.0847에서 0.0323으로 내려갔고 W1은 거의 같았으며 경계 수는 23에서 5로 줄었다. 이 사례 하나로 일반화할 수 없다.
+
+다섯 개 ablation은 합성 5장과 phone 1장($n=6$)에서 실행했다. 각 줄은 해당 성분만 끈 코드 경로의 평균이다.
+
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+설정 & TV & 세로 W1 & 액센트 재현 & 경계 수 \\
+\midrule
+전체 Palette Scan & .0218 & .0334 & .667 & 11.17 \\
+질량 제약 끔 & .0308 & .0300 & .917 & 9.17 \\
+중앙 스캔 anchor 끔 & .0229 & .0264 & .667 & 10.33 \\
+행별 세로 지지 끔 & .0192 & .0405 & .833 & 9.17 \\
+연속성 비용 끔 & .0250 & .0316 & .583 & 11.83 \\
+액센트 최소폭 끔 & .0223 & .0325 & .583 & 11.17 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+이 작은 ablation은 trade-off를 드러낸다. 질량 제약을 끄면 TV가 나빠지지만 W1은 오히려 낮아진다. 행별 지지를 끄면 TV는 낮아져도 세로 배치가 나빠진다. 최소 액센트 폭을 끄면 액센트 재현이 내려간다. 모두 6개 사례의 기술 진단치이며 통계 검정이나 사람 평가가 아니다. 재실행 명령은 \texttt{python3 experiments/run\_experiments.py --image /path/to/photo.png}이며, 합성 사례만 실행할 때는 \texttt{--image}을 생략한다. 원자료는 \texttt{paper/experiment-results.json}, 시각 비교는 \texttt{paper/figures/comparison-wide.png}에 둔다.
+
+\textbf{코드 안내.} \texttt{index.html}에는 브라우저 UI, 프로파일 모드 선택, 모션, 렌더러, 내보내기가 있고, \texttt{palette-projection.js}에는 팔레트 추출·Scan Stripes 프로파일·Palette Scan 투영이 있다. \texttt{analyze\_gradient.py}는 생성기에 연결되지 않은 레퍼런스 스크린샷 분석기다. 이 분리는 “스크린샷을 재는 프로파일”과 “원본 입력을 줄이는 프로파일”을 혼동하지 않게 한다. 실험 스크립트는 앱과 같은 JS 모듈을 Node에서 호출하므로, 비교 대상 알고리즘 코드가 복제되지 않는다.
+
+\section{현재 결론과 남은 질문}
+\begin{enumerate}[leftmargin=1.4em,itemsep=1pt]
+  \item 가장 직접적인 기준 결과는 여전히 Scan Stripes다. 행별 중심색 선택은 설명 가능하고, 사용자가 선호한 수평 스캔의 원형을 보존한다.
+  \item 팔레트 mass와 y evidence를 추가하면 중심 창 밖의 색을 더 자주 드러낼 수 있다. 그 대가로 이산 quota와 visibility floor가 띠를 만들며, 경계 수가 늘 수 있다.
+  \item “일본풍/Zen”은 계산식이 아니라 색, 경계 밀도, 모션 진폭과 속도를 포함하는 시각 목표다. screenshot 분석값은 원본 구현의 내부 파라미터가 아니고, 일본 전통색을 사용한다는 사실만으로 결과가 그 미학을 달성했다고 말할 수 없다.
+  \item 현재 자료는 고정 합성 생성기 25개와 자연 사진 1개다. 다양한 실제 이미지에서의 실패 조건, 여러 색이 겹치는 경우, 출력 profile 크기 변화, 사용자 선호는 측정하지 않았다. 사람 평가는 이번 범위에서 제외했다.
+\end{enumerate}
+
+\section*{참고문헌 및 배경 자료}
+\begin{enumerate}[leftmargin=1.5em,itemsep=2pt]
+\item Nuevo.Tokyo, \emph{Japanese Gradients [for UI]}, project description and product information, \url{https://www.nuevo.tokyo/japanese-gradients-for-ui}. 디자인 레퍼런스; 알고리즘 논문이 아님.
+\item C. Tomasi and R. Manduchi, ``Bilateral Filtering for Gray and Color Images,'' \emph{Proc. IEEE ICCV}, 1998, pp. 839--846. DOI: \url{https://doi.org/10.1109/ICCV.1998.710815}.
+\item A. A. Gooch, S. C. Olsen, J. Tumblin, and B. Gooch, ``Color2Gray: Salience-Preserving Color Removal,'' in \emph{Proc. ACM SIGGRAPH}, 2005. \url{https://users.cs.northwestern.edu/~ago820/color2gray/}.
+\item K. He, J. Sun, and X. Tang, ``Guided Image Filtering,'' in \emph{Proc. ECCV}, 2010. DOI: \url{https://doi.org/10.1007/978-3-642-15549-9_1}.
+\item E. S. L. Gastal and M. M. Oliveira, ``Domain Transform for Edge-Aware Image and Video Processing,'' \emph{ACM Trans. Graph.}, 30(4), 2011. DOI: \url{https://doi.org/10.1145/2010324.1964964}.
+\item H. Chang, O. Fried, Y. Liu, S. DiVerdi, and A. Finkelstein, ``Palette-based Photo Recoloring,'' \emph{ACM Trans. Graph.}, 34(4), Proc. SIGGRAPH, 2015. \url{https://pixl.cs.princeton.edu/pubs/chang_2015_ppr/index.php}.
+\item J. Tan, J. Echevarria, and Y. Gingold, ``Efficient Palette-based Decomposition and Recoloring of Images via RGBXY-space Geometry,'' \emph{ACM Trans. Graph.}, 37(6), Proc. SIGGRAPH Asia, 2018. DOI: \url{https://doi.org/10.1145/3272127.3275054}.
+\item Z.-J. Du, L.-F. Kang, J. Tan, Y. Gingold, and K. Xu, ``Image Vectorization and Editing via Linear Gradient Layer Decomposition,'' \emph{ACM Trans. Graph.}, 42(4), Proc. SIGGRAPH, 2023. \url{https://cragl.cs.gmu.edu/gradientlayers/}.
+\item X. Shi, M. Liu, Z. Zhou, A. Neshati, R. Rossi, and J. Zhao, ``Exploring Interactive Color Palettes for Abstraction-Driven Exploratory Image Colorization,'' in \emph{Proc. ACM CHI}, 2024. DOI: \url{https://doi.org/10.1145/3613904.3642223}.
+\end{enumerate}
+
+\end{document}

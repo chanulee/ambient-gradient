@@ -35,6 +35,7 @@
           <option value="accent">ACCENT SCAN</option>
           <option value="zen">ZEN FIELD</option>
           <option value="story">COLOUR STORY</option>
+          <option value="palette">PALETTE SCAN</option>
         </select>
         <p class="method-note" id="methodNote"></p>
         <label class="label-row" for="scanWidth"><span>SCAN WIDTH</span><output id="scanWidthValue">12%</output></label>
@@ -68,9 +69,10 @@
     </aside>
     <div class="toast" id="toast" role="status"></div>
   </main>
+  <script src="./palette-projection.js"></script>
   <script>
     const demoColors=['#d8d3c9','#93aca2','#c4aab9','#485a5b'];
-    const methodNotes={stripes:'Per-row colour mode from a narrow centre scan. Keeps the source colours and stripe boundaries.',soft:'The same centre scan, smoothed with a colour-aware filter that softens nearby colours while holding strong boundaries.',accent:'Adds a restrained trace of vivid local colours when they appear in the scan window.',zen:'A quiet scan blend with preserved colour. No white tint, glow, or bloom.',story:'Key colours ordered by source height, arranged as a designed sequence.'};
+    const methodNotes={stripes:'Per-row colour mode from a narrow centre scan. Keeps the source colours and stripe boundaries.',soft:'The same centre scan, smoothed with a colour-aware filter that softens nearby colours while holding strong boundaries.',accent:'Adds a restrained trace of vivid local colours when they appear in the scan window.',zen:'A quiet scan blend with preserved colour. No white tint, glow, or bloom.',story:'Key colours ordered by source height, arranged as a designed sequence.',palette:'Projects full-image key-colour proportions onto the scan profile, guided by where each colour appears vertically.'};
     const state={style:'smooth',method:'stripes',resolution:95,scanWidth:12,softness:28,motionAmount:55,motionSpeed:70,inputImage:null,imageProfile:null,profilePixels:null,framePixels:null,shiftedProfile:null,imageColors:null,imageVisible:true,sourceUrl:null,frame:0};
     const canvas=document.querySelector('#art'),stage=document.querySelector('#stage'),sourceImage=document.querySelector('#sourceImage');
     function currentColors(){return state.imageColors||demoColors}
@@ -125,9 +127,13 @@
       document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copy(b.dataset.copy));
     }
     function makeProfile(img,algorithm='center'){
-      const w=Math.min(256,img.naturalWidth),h=Math.min(768,img.naturalHeight);
+      const scale=Math.min(1,768/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
       const sample=document.createElement('canvas'),sampleCtx=sample.getContext('2d',{willReadFrequently:true});sample.width=w;sample.height=h;sampleCtx.fillStyle='#fff';sampleCtx.fillRect(0,0,w,h);sampleCtx.imageSmoothingEnabled=true;sampleCtx.imageSmoothingQuality='high';sampleCtx.drawImage(img,0,0,w,h);
       const pixels=sampleCtx.getImageData(0,0,w,h).data,profile=document.createElement('canvas'),profileCtx=profile.getContext('2d',{willReadFrequently:true});profile.width=1;profile.height=h;
+      if(algorithm==='center'||algorithm==='palette'){
+        const scan=PaletteProjection.scanProfile(pixels,w,h,state.scanWidth),output=algorithm==='palette'?PaletteProjection.project(pixels,w,h,state.imageColors,scan):scan;
+        profileCtx.putImageData(new ImageData(output,1,h),0,0);return profile;
+      }
       const row=profileCtx.createImageData(1,h);
       const setMode=(y,left,right,accent=false)=>{
         const bins=new Map();
@@ -216,42 +222,10 @@
     function extractColors(img){
       const scale=Math.min(1,192/Math.max(img.naturalWidth,img.naturalHeight)),sample=document.createElement('canvas'),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
       sample.width=w;sample.height=h;const sampleCtx=sample.getContext('2d',{willReadFrequently:true});sampleCtx.drawImage(img,0,0,w,h);
-      return extractColorsFromPixels(sampleCtx.getImageData(0,0,w,h).data,w,h);
-    }
-    function extractColorsFromPixels(raw,w,h){
-      const bins=new Map(),accents=new Map(),total=w*h;
-      // ponytail: 4-bit RGB modes and a 40% cutoff keep palettes concise; lower it if fine shades matter.
-      for(let i=0;i<raw.length;i+=4){
-        const alpha=raw[i+3]/255,r=raw[i]*alpha+255*(1-alpha),g=raw[i+1]*alpha+255*(1-alpha),b=raw[i+2]*alpha+255*(1-alpha),key=(r>>4)*256+(g>>4)*16+(b>>4),bin=bins.get(key)||[0,0,0,0];bin[0]+=r;bin[1]+=g;bin[2]+=b;bin[3]++;bins.set(key,bin);
-        const max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min,saturation=max?delta/max:0,value=max/255;let hue=0;
-        if(delta){if(max===r)hue=((g-b)/delta+(g<b?6:0))/6;else if(max===g)hue=((b-r)/delta+2)/6;else hue=((r-g)/delta+4)/6}
-        if(saturation>.28&&value>.78){const hueBin=Math.floor(hue*24),accent=accents.get(hueBin)||[0,0,0,0,0,0];accent[0]+=r;accent[1]+=g;accent[2]+=b;accent[3]++;accent[4]+=saturation;accent[5]+=value;accents.set(hueBin,accent)}
-      }
-      const candidates=[...bins.values()].map(([r,g,b,count])=>{
-        const color=[r/count,g/count,b/count],max=Math.max(...color)/255,min=Math.min(...color)/255,saturation=max?(max-min)/max:0,value=max,share=count/total;
-        return {color,count,saturation,value,score:Math.sqrt(share)*(.52+.48*saturation+(value>.84&&saturation<.16?.2:0))};
-      }).sort((a,b)=>b.score-a.score);
-      const chosen=[],minimumSupport=Math.max(2,Math.ceil(total*.00015)),distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
-      while(chosen.length<10){
-        let best=null,bestScore=0;
-        for(const candidate of candidates){
-          if(candidate.count<minimumSupport)continue;
-          const separation=chosen.length?Math.min(...chosen.map(item=>distance(item.color,candidate.color))):180;
-          if(separation<30)continue;
-          const score=candidate.score*(.35+.65*Math.min(1,separation/180));
-          if(score>bestScore){best=candidate;bestScore=score}
-        }
-        if(!best||chosen.length&&bestScore<chosen[0].score*.4)break;
-        chosen.push(best);
-      }
-      const white=candidates.filter(item=>item.value>.84&&item.saturation<.16&&item.count>=minimumSupport*2).sort((a,b)=>b.value-a.value||b.count-a.count)[0],brightAccents=[...accents.values()].filter(([, , ,count])=>count>=minimumSupport).map(([r,g,b,count,s,v])=>({color:[r/count,g/count,b/count],score:Math.sqrt(count/total)*(.35+.45*s/count+.2*v/count)})).sort((a,b)=>b.score-a.score),colors=[];
-      if(white)colors.push(white.color);
-      for(const accent of brightAccents)if(colors.every(color=>distance(color,accent.color)>14))colors.push(accent.color);
-      for(const item of chosen)if(colors.every(color=>distance(color,item.color)>30))colors.push(item.color);
-      return colors.slice(0,10).map(hexOf);
+      return PaletteProjection.extractColors(sampleCtx.getImageData(0,0,w,h).data,w,h);
     }
     function installProfile(img){
-      const algorithm=state.method==='story'?'story':state.method==='accent'?'accent':'center';
+      const algorithm=state.method==='story'?'story':state.method==='accent'?'accent':state.method==='palette'?'palette':'center';
       state.imageProfile=makeProfile(img,algorithm);
       const raw=state.imageProfile.getContext('2d',{willReadFrequently:true}).getImageData(0,0,1,state.imageProfile.height).data,height=state.imageProfile.height;
       state.profilePixels=state.method==='soft'?bilateralProfile(raw,height,state.softness):state.method==='zen'?makeZenProfile(raw,height,state.softness):raw;

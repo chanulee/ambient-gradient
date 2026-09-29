@@ -6,7 +6,7 @@ A client-side image-to-gradient studio. Upload a PNG or JPG, select a scan-based
 
 Given source image `I(x,y)`:
 
-1. Downsample it to at most 256 pixels wide and 768 pixels tall, compositing transparent pixels over white.
+1. Downsample it proportionally so its longer side is at most 768 pixels, compositing transparent pixels over white.
 2. At each source row `y`, inspect only a centered vertical window. Its width is controlled by **Scan Width** (default 12% of the image width).
 3. Quantize each inspected RGB pixel into a 4-bit-per-channel bucket (4096 possible bins), then choose the most populated bin for that row. The output color is the mean of pixels inside that one winning bin. This is a row-local histogram mode, not a row-wide average and not a global palette clustering.
 4. Write those colors to a 1×H profile. This retains source y order but makes each row's choice independently, so quantization can create thin edges and jitter.
@@ -29,6 +29,7 @@ for y in 0..H:
 | **Accent Scan** | Keeps the dominant row mode, then mixes in a separated vivid local mode in proportion to its presence in the scan window | Palette-aware local histogram selection |
 | **Zen Field** | A modest edge-aware scan plus a small broad-scale component. It does not whiten, desaturate, add glow, or bloom | Multiscale signal decomposition with restrained amplitude |
 | **Color Story** | Orders original-image key colors by their vertical centers and makes a designed transition sequence | Spatial palette summary; deliberately changes source proportions |
+| **Palette Scan** | Balances the full-image key-colour proportions against where those colours occur vertically, then projects them back into a scan profile | Palette-mass-constrained scanline projection (prototype) |
 
 **Scan Width** changes the sampled region. **Edge Softness** is available for Soft Scan and Zen Field. It adjusts the bilateral filter's y radius and color-distance tolerance. The baseline is left intact so it can serve as a direct reference.
 
@@ -42,7 +43,29 @@ The previous Zen pass mixed the source profile with Gaussian-smoothed profiles a
 - [Tan, Echevarria, and Gingold, *Efficient palette-based decomposition and recoloring via RGBXY-space geometry* (SIGGRAPH Asia 2018)](https://cragl.cs.gmu.edu/fastlayers/) jointly considers image color and position. A useful future hybrid is to use its spatial layers to propose a few band candidates, then let Scan Stripes choose/sequence the candidates by y. The current generator does not implement RGBXY convex-hull decomposition.
 - [Chang et al., *Palette-based Photo Recoloring* (SIGGRAPH 2015)](https://pixl.cs.princeton.edu/pubs/chang_2015_ppr/index.php) uses an image palette to guide recoloring. Here original-pixel key colors are also kept separate from the scan profile; Accent Scan uses them only as a palette display, while the per-row accent decision comes from local scan pixels.
 
-The practical new direction is **scan first, adjust the signal second**: retain a simple, inspectable y-profile; expose the scan aperture; then add optional chroma-aware selection or edge-aware smoothing. This is an implementation proposal, not a validated perception result. A paper-level novelty claim would need comparisons on varied images and a user study or perceptual metric for stripe continuity, source-color retention, and aesthetic preference.
+The practical new direction is **scan first, adjust the signal second**: retain a simple, inspectable y-profile; expose the scan aperture; then add chroma-aware palette projection or edge-aware smoothing. Palette Scan below is a prototype with initial objective comparisons. Those measurements do not establish aesthetic preference or broad perceptual validity.
+
+## Palette Scan: projection operator prototype
+
+`PALETTE SCAN` is the candidate research method. It keeps the existing central Scan Stripes profile as a structural anchor, while deriving palette evidence from the whole image:
+
+1. Extract key colours from the source image independently of the scan profile. For every processing pixel, compute soft assignments to those colours in OKLab. Their full-image masses are `q[k]`; their row-wise evidence is `r[y,k]`.
+2. Combine row evidence with similarity to the original scan colour. Sinkhorn scaling balances the resulting row-by-palette matrix so every row has unit mass and its colour columns match `q`.
+3. Convert soft assignments to one colour per output row. A 1D Potts path cost favors continuous runs; boundary evidence from changes in source row colours or the scan profile lowers that cost where a transition is supported. Largest-remainder apportionment enforces integer row quotas. Bright, saturated key colours with enough source support receive a four-row minimum; the added rows are taken proportionally from the other colours.
+4. Reconstruct a short OKLab transition around label changes and add 42% of the scan profile's residual relative to the nearest palette colour. This keeps fine changes from Scan Stripes while making off-center image colours available to the output.
+
+The minimum accent width trades exact source proportion for visibility. Smoothing the final transition also changes the rendered pixel histogram slightly, so the exact quota guarantee applies to discrete row labels before reconstruction. The operator is a task-specific hybrid of palette balancing, scanline evidence, and 1D total-variation regularization; those components are established ideas. The contribution claim should remain limited to this formulation and must be tested against broader prior work before calling it a novel general-purpose filter.
+
+## Reproducing the prototype experiments
+
+The experiment runner calls the same JavaScript projector used by the browser app. It generates 25 fixed-seed synthetic scenes with off-center white, lime, and orange patches, optionally processes a real photograph, and reports palette-mass total variation, vertical-distribution Wasserstein distance, accent recall, adjacent OKLab change, and strong-transition count. Five ablations remove mass balancing, the scan anchor, vertical evidence, continuity cost, and the minimum accent width. No human preference or aesthetic-quality claim is measured.
+
+```sh
+python3 experiments/run_experiments.py
+python3 experiments/run_experiments.py --image /path/to/photo.png
+```
+
+The measured reference-phone run uses the supplied `TL_Preview.png`. Results are saved in `paper/experiment-results.json`; visual comparisons are in `paper/figures/comparison-wide.png`. On 25 synthetic cases, mean palette-share TV changed from 0.0370 to 0.0196, normalized vertical W1 from 0.0176 to 0.0160, and eligible accent recall from 0.02 to 0.80. Strong transitions increased from 4.08 to 10.92 per profile, exposing the continuity trade-off. On the single real photo, palette-share TV changed from 0.0847 to 0.0323 and vertical W1 from 0.0998 to 0.0985. One photo is not enough to claim generalization.
 
 ## Reference screenshot analysis
 

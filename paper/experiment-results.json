@@ -1,0 +1,1020 @@
+[
+  {
+    "case": "synthetic_accents",
+    "input_size": [
+      320,
+      320
+    ],
+    "processing_size": [
+      320,
+      320
+    ],
+    "palette": [
+      "#F6EDF8",
+      "#BAFE04",
+      "#FE6C03",
+      "#D0E882",
+      "#303438",
+      "#AAA6A1"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.05591530966691864,
+      "vertical_distribution_w1": 0.017557007609218328,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.003991778241338909,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.011987075018419042,
+      "vertical_distribution_w1": 0.0343890368465958,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.007078182181360174,
+      "strong_transitions_deltaE_gt_0_08": 8,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.177
+  },
+  {
+    "case": "synthetic_00",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFF",
+      "#B6F802",
+      "#FE6C02",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.055369441910006194,
+      "vertical_distribution_w1": 0.027045481887152993,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.01976036778265971,
+      "vertical_distribution_w1": 0.01592061553799741,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.01217301505337592,
+      "strong_transitions_deltaE_gt_0_08": 17,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_01",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#BBFE08",
+      "#FB6C01",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.027696987390593647,
+      "vertical_distribution_w1": 0.009887734709757439,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.023624883560790903,
+      "vertical_distribution_w1": 0.01755781183387308,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.010843074712684279,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.069
+  },
+  {
+    "case": "synthetic_02",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FDFDFD",
+      "#FE6B01",
+      "#B9FD02",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.04017733018886677,
+      "vertical_distribution_w1": 0.015206601321795372,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.016893136135250574,
+      "vertical_distribution_w1": 0.01426339395440362,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.01144325994205026,
+      "strong_transitions_deltaE_gt_0_08": 13,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.07
+  },
+  {
+    "case": "synthetic_03",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#BAFE01",
+      "#FC6B02",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.0346906667374211,
+      "vertical_distribution_w1": 0.018019456257446203,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.026515517758393066,
+      "vertical_distribution_w1": 0.019769899803047854,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.011919027442777242,
+      "strong_transitions_deltaE_gt_0_08": 15,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.07
+  },
+  {
+    "case": "synthetic_04",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#FB6D07",
+      "#BAFE02",
+      "#B2D24E",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.01589533202350502,
+      "vertical_distribution_w1": 0.007340501184862331,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.021611417563027348,
+      "vertical_distribution_w1": 0.013509440074070815,
+      "accent_recall": 0.6666666666666666,
+      "mean_adjacent_deltaE_ok": 0.008181778028934262,
+      "strong_transitions_deltaE_gt_0_08": 8,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_05",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#FB6A01",
+      "#BAFC05",
+      "#282D31",
+      "#AAA49E",
+      "#626568"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.0626015318383088,
+      "vertical_distribution_w1": 0.02099902202572057,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.024284804763774863,
+      "vertical_distribution_w1": 0.01698628756298862,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.011405243297050775,
+      "strong_transitions_deltaE_gt_0_08": 16,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.07
+  },
+  {
+    "case": "synthetic_06",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FFFFFE",
+      "#FC6E08",
+      "#BAFC0B",
+      "#C1CF8E",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.05711019901342816,
+      "vertical_distribution_w1": 0.03271455533379136,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.017615976232514416,
+      "vertical_distribution_w1": 0.03336632377752831,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.007670493920084811,
+      "strong_transitions_deltaE_gt_0_08": 7,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.072
+  },
+  {
+    "case": "synthetic_07",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FCFCFB",
+      "#BAFF04",
+      "#FF6E08",
+      "#626568",
+      "#AAA49E",
+      "#282D31",
+      "#C3C0B9"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.01612720563190124,
+      "vertical_distribution_w1": 0.006911262679408489,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.006093496613098393,
+      "strong_transitions_deltaE_gt_0_08": 6,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.01690853490751591,
+      "vertical_distribution_w1": 0.007243495331290537,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.00855625335342554,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_08",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FDFDFE",
+      "#FD6B01",
+      "#B5F407",
+      "#C2FE01",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.023493520623401157,
+      "vertical_distribution_w1": 0.011589858503263004,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.027012148994004538,
+      "vertical_distribution_w1": 0.016017531973130168,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.014411908525226384,
+      "strong_transitions_deltaE_gt_0_08": 20,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.076
+  },
+  {
+    "case": "synthetic_09",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FFFFFF",
+      "#FB6D07",
+      "#BAFD04",
+      "#C1D189",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.03880754460296013,
+      "vertical_distribution_w1": 0.013961114834159629,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.028791493738175973,
+      "vertical_distribution_w1": 0.01722865307557838,
+      "accent_recall": 0.6666666666666666,
+      "mean_adjacent_deltaE_ok": 0.007890057078632553,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.076
+  },
+  {
+    "case": "synthetic_10",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#F9FCFD",
+      "#B9FE01",
+      "#FE7415",
+      "#282D31",
+      "#AAA49E",
+      "#626568"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.045297182563588584,
+      "vertical_distribution_w1": 0.026793749498844468,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.020082094421579804,
+      "vertical_distribution_w1": 0.013984583950705601,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.009976196211353459,
+      "strong_transitions_deltaE_gt_0_08": 14,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_11",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FFFFFF",
+      "#BAFC0A",
+      "#F66B06",
+      "#C1CF8D",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.052964061663159645,
+      "vertical_distribution_w1": 0.02136125105499909,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.012883646249364208,
+      "vertical_distribution_w1": 0.0188358263134046,
+      "accent_recall": 0.6666666666666666,
+      "mean_adjacent_deltaE_ok": 0.009089556268772633,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.075
+  },
+  {
+    "case": "synthetic_12",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFD",
+      "#B5F802",
+      "#FE6B01",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.030756023367745272,
+      "vertical_distribution_w1": 0.014892337097718616,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.020264708342750532,
+      "vertical_distribution_w1": 0.006454607228676986,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.011078496389445113,
+      "strong_transitions_deltaE_gt_0_08": 12,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.073
+  },
+  {
+    "case": "synthetic_13",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FFFFFF",
+      "#F77418",
+      "#B8FB01",
+      "#C8FF00",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.024568403841809645,
+      "vertical_distribution_w1": 0.014970852555082802,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.022907738799709938,
+      "vertical_distribution_w1": 0.014714628175260716,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.009499095590817496,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_14",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FFFFFF",
+      "#FE6C04",
+      "#B6F901",
+      "#C4FE00",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.03831527460106204,
+      "vertical_distribution_w1": 0.02326017237172043,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.02455400393944388,
+      "vertical_distribution_w1": 0.012252669434576584,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.012763590121576428,
+      "strong_transitions_deltaE_gt_0_08": 14,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.074
+  },
+  {
+    "case": "synthetic_15",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFDFC",
+      "#FC6E08",
+      "#BAFF02",
+      "#C2D08F",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.027821929977487482,
+      "vertical_distribution_w1": 0.013157585395896744,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.014615480990433711,
+      "vertical_distribution_w1": 0.015754806776701227,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.006689152872580233,
+      "strong_transitions_deltaE_gt_0_08": 6,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.077
+  },
+  {
+    "case": "synthetic_16",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFFFD",
+      "#C0FE1C",
+      "#FB6C01",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.02360037696144086,
+      "vertical_distribution_w1": 0.010390228681755691,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.02718850398682504,
+      "vertical_distribution_w1": 0.0067851114796475915,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.009725097462458258,
+      "strong_transitions_deltaE_gt_0_08": 11,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_17",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FDFEFE",
+      "#FF7311",
+      "#BAFE02",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.026256469754670372,
+      "vertical_distribution_w1": 0.017829344122103807,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.014282900271675177,
+      "vertical_distribution_w1": 0.01317074344179238,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.0073604133663077685,
+      "strong_transitions_deltaE_gt_0_08": 7,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.073
+  },
+  {
+    "case": "synthetic_18",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#BAFD06",
+      "#FA6F0D",
+      "#C1CF8E",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.04465109479135145,
+      "vertical_distribution_w1": 0.022008737425344514,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.017819071421084125,
+      "vertical_distribution_w1": 0.027380384417851414,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.007676068117216425,
+      "strong_transitions_deltaE_gt_0_08": 6,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.078
+  },
+  {
+    "case": "synthetic_19",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#B9FD01",
+      "#F7751A",
+      "#C7FF00",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.03619916533315801,
+      "vertical_distribution_w1": 0.019163414278459395,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.015047668016109215,
+      "vertical_distribution_w1": 0.012068031441452692,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.009500926753462341,
+      "strong_transitions_deltaE_gt_0_08": 11,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.073
+  },
+  {
+    "case": "synthetic_20",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFD",
+      "#FA710F",
+      "#BAFD06",
+      "#C1CF8E",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.03842338711793235,
+      "vertical_distribution_w1": 0.023575962588129988,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 3
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.014593897631770308,
+      "vertical_distribution_w1": 0.017150330261523017,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.0075755829902568765,
+      "strong_transitions_deltaE_gt_0_08": 7,
+      "supported_neon_palette_colors": 3
+    },
+    "projector_wall_time_seconds": 0.08
+  },
+  {
+    "case": "synthetic_21",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#BAFE01",
+      "#FD6C01",
+      "#282D31",
+      "#AAA49E",
+      "#626568"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.042463979141703495,
+      "vertical_distribution_w1": 0.018176925907969894,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.013295223341730087,
+      "vertical_distribution_w1": 0.010126317212757464,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.01042571289327833,
+      "strong_transitions_deltaE_gt_0_08": 16,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.071
+  },
+  {
+    "case": "synthetic_22",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FEFEFE",
+      "#BAFE04",
+      "#FD6D01",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.02716613862733553,
+      "vertical_distribution_w1": 0.011460852533746277,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.02306323235084847,
+      "vertical_distribution_w1": 0.009301527673626776,
+      "accent_recall": 0.5,
+      "mean_adjacent_deltaE_ok": 0.008945729843700798,
+      "strong_transitions_deltaE_gt_0_08": 11,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.072
+  },
+  {
+    "case": "synthetic_23",
+    "input_size": [
+      256,
+      256
+    ],
+    "processing_size": [
+      256,
+      256
+    ],
+    "palette": [
+      "#FCFDFE",
+      "#BAFC0A",
+      "#FE7618",
+      "#626568",
+      "#AAA49E",
+      "#282D31"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.039318081429154786,
+      "vertical_distribution_w1": 0.021310556704216114,
+      "accent_recall": 0.0,
+      "mean_adjacent_deltaE_ok": 0.0042667423050107576,
+      "strong_transitions_deltaE_gt_0_08": 4,
+      "supported_neon_palette_colors": 2
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.014426056130573555,
+      "vertical_distribution_w1": 0.01688515688356232,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.009007352488979634,
+      "strong_transitions_deltaE_gt_0_08": 9,
+      "supported_neon_palette_colors": 2
+    },
+    "projector_wall_time_seconds": 0.072
+  },
+  {
+    "case": "reference_photo",
+    "input_size": [
+      1442,
+      1704
+    ],
+    "processing_size": [
+      650,
+      768
+    ],
+    "palette": [
+      "#ECE6E2",
+      "#D2B486",
+      "#D1C376",
+      "#C3CE85",
+      "#E5B488",
+      "#95663B"
+    ],
+    "baseline": {
+      "palette_share_tv": 0.08465073510923987,
+      "vertical_distribution_w1": 0.09984490872242999,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.009286290277253462,
+      "strong_transitions_deltaE_gt_0_08": 23,
+      "supported_neon_palette_colors": 4
+    },
+    "palette_scan": {
+      "palette_share_tv": 0.032316925884444014,
+      "vertical_distribution_w1": 0.09848136820738623,
+      "accent_recall": 1.0,
+      "mean_adjacent_deltaE_ok": 0.005370378202972943,
+      "strong_transitions_deltaE_gt_0_08": 5,
+      "supported_neon_palette_colors": 4
+    },
+    "projector_wall_time_seconds": 0.256
+  },
+  {
+    "aggregate": {
+      "synthetic_cases": 25,
+      "baseline_mean": {
+        "palette_share_tv": 0.03702746555195642,
+        "vertical_distribution_w1": 0.01758338266250254,
+        "accent_recall": 0.02,
+        "mean_adjacent_deltaE_ok": 0.004328813914787389,
+        "strong_transitions_deltaE_gt_0_08": 4.08,
+        "supported_neon_palette_colors": 2.48
+      },
+      "palette_scan_mean": {
+        "palette_share_tv": 0.019601183293936977,
+        "vertical_distribution_w1": 0.016044688578481757,
+        "accent_recall": 0.8,
+        "mean_adjacent_deltaE_ok": 0.00963541059623232,
+        "strong_transitions_deltaE_gt_0_08": 10.92,
+        "supported_neon_palette_colors": 2.48
+      }
+    }
+  },
+  {
+    "ablations": {
+      "no_mass_constraint": {
+        "n": 6,
+        "palette_share_tv": 0.030832650596204186,
+        "vertical_distribution_w1": 0.030035909108905374,
+        "accent_recall": 0.9166666666666666,
+        "mean_adjacent_deltaE_ok": 0.00845040240947588,
+        "strong_transitions_deltaE_gt_0_08": 9.166666666666666,
+        "supported_neon_palette_colors": 2.5
+      },
+      "no_scan_anchor": {
+        "n": 6,
+        "palette_share_tv": 0.022942470643130205,
+        "vertical_distribution_w1": 0.02635049756497578,
+        "accent_recall": 0.6666666666666666,
+        "mean_adjacent_deltaE_ok": 0.009638689713883344,
+        "strong_transitions_deltaE_gt_0_08": 10.333333333333334,
+        "supported_neon_palette_colors": 2.5
+      },
+      "no_vertical_evidence": {
+        "n": 6,
+        "palette_share_tv": 0.01918075615775171,
+        "vertical_distribution_w1": 0.04051174340985913,
+        "accent_recall": 0.8333333333333334,
+        "mean_adjacent_deltaE_ok": 0.0076297578887722555,
+        "strong_transitions_deltaE_gt_0_08": 9.166666666666666,
+        "supported_neon_palette_colors": 2.5
+      },
+      "no_continuity_penalty": {
+        "n": 6,
+        "palette_share_tv": 0.02500472040976104,
+        "vertical_distribution_w1": 0.03163326347726641,
+        "accent_recall": 0.5833333333333334,
+        "mean_adjacent_deltaE_ok": 0.010278484624730314,
+        "strong_transitions_deltaE_gt_0_08": 11.833333333333334,
+        "supported_neon_palette_colors": 2.5
+      },
+      "no_accent_visibility_floor": {
+        "n": 6,
+        "palette_share_tv": 0.022331012138049684,
+        "vertical_distribution_w1": 0.032472152349574346,
+        "accent_recall": 0.5833333333333334,
+        "mean_adjacent_deltaE_ok": 0.009130509841118977,
+        "strong_transitions_deltaE_gt_0_08": 11.166666666666666,
+        "supported_neon_palette_colors": 2.5
+      }
+    }
+  }
+]
